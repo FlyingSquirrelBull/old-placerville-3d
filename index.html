@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+</head>
+<body style="margin:0;height:100vh;display:flex;flex-direction:column">
+<title>Old Placerville in 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --paper: #FBFAF5; --panel: #FFFFFF; --ink: #1E2730; --muted: #5F6B76; --rule: #D8DCD6;
+    --accent: #0E7C86; --accent-soft: #D7ECEE; --amber: #C98F2A;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif; --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --paper: #14191E; --panel: #1B2228; --ink: #E6EBEF; --muted: #A4AFB9; --rule: #2E3842; --accent: #45B8C2; --accent-soft: #163B40; --amber: #E2B55A; } }
+  :root[data-theme="dark"] { color-scheme: dark; --paper: #14191E; --panel: #1B2228; --ink: #E6EBEF; --muted: #A4AFB9; --rule: #2E3842; --accent: #45B8C2; --accent-soft: #163B40; --amber: #E2B55A; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15px; display: flex; flex-direction: column; min-height: 100%; }
+  header { padding: 12px 16px 10px; border-bottom: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  h1 { font-family: var(--display); font-size: 20px; margin: 0; }
+  .sub { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 16px; border-bottom: 1px solid var(--rule); align-items: center; }
+  button { font-family: var(--body); font-size: 14px; padding: 6px 12px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); border-radius: 6px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.on { background: var(--accent-soft); border-color: var(--accent); }
+  .spacer { flex: 1; }
+  .count { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+  #view { flex: 1; min-height: 420px; position: relative; background: #0f1419; }
+  #view canvas { display: block; width: 100%; height: 100%; }
+  .hint { position: absolute; left: 12px; bottom: 10px; font-family: var(--mono); font-size: 11.5px; color: #c9d3dc; background: rgba(15,20,25,0.55); padding: 4px 8px; border-radius: 4px; pointer-events: none; }
+  .legend { position: absolute; right: 12px; top: 10px; font-family: var(--mono); font-size: 11.5px; color: #c9d3dc; background: rgba(15,20,25,0.55); padding: 6px 10px; border-radius: 4px; line-height: 1.7; }
+  .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+  @media (max-width: 480px) { .legend { display: none; } }
+</style>
+
+<header>
+  <h1>10360 Old Placerville Rd, option B in 3D</h1>
+  <div class="sub">same geometry as the plan · 1 unit = 1 ft · walls drawn to 9–10 ft · 21 × 23 in chairs in the hall and the adult class</div>
+</header>
+<div class="bar">
+  <button id="vOver" class="on">Overview</button>
+  <button id="vBack">From the back aisle</button>
+  <button id="vPlat">From the platform</button>
+  <button id="vDoor">From the front door</button>
+  <button id="vNurs">Family alcove</button>
+  <span class="spacer"></span>
+  <button id="tWalls">Lower walls</button>
+  <span class="count" id="count">—</span>
+</div>
+<div id="view">
+  <div class="legend"><i style="background:#8E9AA6"></i>chair<br><i style="background:#D9A441"></i>platform / teaching area<br><i style="background:#E0B457;opacity:.6"></i>wheelchair space<br><i style="background:#2FA3AE"></i>new wall<br><i style="background:#6FB0D6;opacity:.7"></i>glass</div>
+  <div class="hint">drag to orbit · wheel or pinch to zoom · right-drag or shift-drag to pan</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  // ---------- plan geometry (feet; x east, y south on the plan -> X east, Z south in 3D) ----------
+  const S = (s) => [49.5 - 0.828 * s, 7.5 + 0.561 * s];
+  const Q = (s) => { const p = S(s); return [p[0] + 5.9, p[1] + 8.7]; };
+  const Nn = [0.561, 0.828];
+  const OUTLINE = [[49.5, 7.5], [58, 7.5], [58, 9], [81, 9], [81, 25], [94, 25], [94, 45], [81, 45], [81, 63], [86, 63], [86, 80], [82, 80], [82, 82.5], [66.5, 82.5], [66.5, 80], [19.5, 80], [19.5, 82.5], [3, 82.5], [3, 79], [5, 79], [5, 46.5], [3, 46.5], [3, 39]];
+  const HALL = [Q(10.6), [49.5, 25], [75, 25], [75, 45], [81, 45], [81, 63], [86, 63], [86, 69.4], [68.2, 69.4], [68.2, 68], [32, 68], [32, 71.9], [26.5, 71.9], [26.5, 46.7], [5.7, 46.7], [5, 46.5], [3, 39], S(44.5), Q(44.5)];
+  const FACEBAND = [Q(10.6), Q(44.5), [Q(44.5)[0] + 7 * Nn[0], Q(44.5)[1] + 7 * Nn[1]], [Q(10.6)[0] + 7 * Nn[0], Q(10.6)[1] + 7 * Nn[1]]];
+  const COLS = [[57, 40], [40, 58]];
+  const CW = 1.75, CD = 1.92, PITCH = 3;
+  const inPoly = (pt, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > pt[1]) !== (b[1] > pt[1]) && pt[0] < (b[0] - a[0]) * (pt[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+  const platform = [[50, 68], [75, 51.1], [75, 61], [66.2, 68]];
+  const backstage = [[66.2, 68], [81, 58], [81, 63], [86, 63], [86, 69.4], [68.2, 69.4], [68.2, 68]];
+  const keepOut = [platform, backstage, [[75, 45], [81, 45], [81, 50.5], [75, 50.5]], [[46.6, 25], [75, 25], [75, 28.5], [46.6, 28.5]], [[70.5, 35], [75, 35], [75, 42], [70.5, 42]], FACEBAND];
+  const D = [-0.828, 0.561], O = Q(10.6);
+  const toW = (X, Y) => [O[0] - D[0] * X + Nn[0] * Y, O[1] - D[1] * X + Nn[1] * Y];
+  const rows = { Y0: 8, Y1: 35, X0: -62, X1: 32, aisle: [-10, -6] };
+  function placeHallChairs() {
+    const out = [];
+    const ok = (X, Y) => { const pts = [[X, Y - CD / 2], [X + CW, Y - CD / 2], [X, Y + CD / 2], [X + CW, Y + CD / 2], [X - 3, Y], [X + CW + 3, Y]];
+      for (const c of pts) { const w = toW(c[0], c[1]); if (!inPoly(w, HALL) || keepOut.some(k => inPoly(w, k))) return false; }
+      const ctr = toW(X + CW / 2, Y); if (COLS.some(k => Math.hypot(k[0] - ctr[0], k[1] - ctr[1]) < 1.9)) return false; return true; };
+    for (let Y = rows.Y0; Y <= rows.Y1 + 0.01; Y += PITCH) for (let X = rows.X0; X <= rows.X1; X += CW + 0.08) {
+      if (X + CW > rows.aisle[0] - 0.01 && X < rows.aisle[1] + 0.01) continue; if (!ok(X, Y)) continue;
+      out.push({ X, Y, section: X < rows.aisle[0] ? 'R' : 'L' }); }
+    return out;
+  }
+  const chairs = placeHallChairs();
+  const rowOf = (Y) => Math.round((rows.Y1 - Y) / PITCH) + 1;
+  const byRow = {}; chairs.forEach(c => { c.row = rowOf(c.Y); (byRow[c.row] = byRow[c.row] || []).push(c); });
+  Object.values(byRow).forEach(list => { list.filter(c => c.section === 'R').sort((a, b) => b.X - a.X).forEach((c, i) => c.n = i + 1); list.filter(c => c.section === 'L').sort((a, b) => a.X - b.X).forEach((c, i) => c.n = i + 1); });
+  const backRow = Math.max(...Object.keys(byRow).map(Number));
+  const wc = [];
+  for (let row = backRow; row >= 1 && wc.length < 5; row--) for (const sec of ['R', 'L']) { if (wc.length >= 5) break;
+    const a = chairs.find(c => c.row === row && c.section === sec && c.n === 1), b = chairs.find(c => c.row === row && c.section === sec && c.n === 2), comp = chairs.find(c => c.row === row && c.section === sec && c.n === 3);
+    if (a && b && comp) { a.wc = true; b.wc = true; wc.push({ X: Math.min(a.X, b.X), Y: a.Y }); } }
+  const hallSeats = chairs.filter(c => !c.wc);
+  // classrooms
+  const ROOMS = {
+    c1: { ox: 19.5, oy: 46.7, ux: 0, uy: 1, vx: -1, vy: 0, length: 19.2, depth: 13.8, aisle: 0, perRow: 5, firstU: 2 },
+    c2: { ox: 46.62, oy: 22.15, ux: -0.828, uy: 0.561, vx: -0.561, vy: -0.828, length: 33.9, depth: 10.5 },
+    c3: { ox: 32, oy: 80, ux: 1, uy: 0, vx: 0, vy: -1, length: 36.2, depth: 12, cw: 1.75, cd: 1.92, pitch: 3 }
+  };
+  const classChairs = [], teach = [];
+  let classSeats = 0;
+  for (const k of Object.keys(ROOMS)) { const R = ROOMS[k]; const W = (u, v) => [R.ox + R.ux * u + R.vx * v, R.oy + R.uy * u + R.vy * v];
+    const su0 = R.length - 5, sv0 = (R.depth - 5) / 2; teach.push({ c: W(su0 + 2.5, sv0 + 2.5), ux: R.ux, uy: R.uy });
+    const aisle = R.aisle === undefined ? 3 : R.aisle; const perRow = R.perRow || Math.floor((R.depth - aisle - 1 + 0.08) / (CW + 0.08));
+    const v0 = aisle > 0 ? aisle : (R.depth - perRow * (CW + 0.08) + 0.08) / 2; const u0 = R.firstU || 2.75;
+    const cw = R.cw || 1.6, cd = R.cd || 1.5, pitch = R.pitch || 2.75; const perRow2 = R.perRow || Math.floor((R.depth - aisle - 1 + 0.08) / (cw + 0.08)); const v02 = aisle > 0 ? aisle : (R.depth - perRow2 * (cw + 0.08) + 0.08) / 2;
+    for (let u = u0; u <= su0 - 3.75 + 0.01; u += pitch) for (let k2 = 0, v = v02; k2 < perRow2; k2++, v += cw + 0.08) { classChairs.push({ c: W(u, v + cw / 2), fx: R.ux, fz: R.uy, cw, cd }); classSeats++; } }
+
+  // ---------- three.js scene ----------
+  const view = document.getElementById('view');
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  view.appendChild(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0f1419);
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.5, 2000);
+  scene.add(new THREE.HemisphereLight(0xe8eef4, 0x3a3f44, 0.9));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(-40, 90, -60); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048); const sc = sun.shadow.camera; sc.left = -90; sc.right = 90; sc.top = 90; sc.bottom = -90; sc.near = 10; sc.far = 300;
+  scene.add(sun);
+
+  const M = {
+    floor: new THREE.MeshLambertMaterial({ color: 0xD9D2BE, side: THREE.DoubleSide }),
+    hall: new THREE.MeshLambertMaterial({ color: 0xCFC7B0, side: THREE.DoubleSide }),
+    room: new THREE.MeshLambertMaterial({ color: 0xE7E0CC, side: THREE.DoubleSide }),
+    newroom: new THREE.MeshLambertMaterial({ color: 0xBFDADC, side: THREE.DoubleSide }),
+    wall: new THREE.MeshLambertMaterial({ color: 0xF2EFE8 }),
+    wallTop: new THREE.MeshLambertMaterial({ color: 0x2A3540 }),
+    newWall: new THREE.MeshLambertMaterial({ color: 0x2FA3AE }),
+    glass: new THREE.MeshLambertMaterial({ color: 0x6FB0D6, transparent: true, opacity: 0.45 }),
+    plat: new THREE.MeshLambertMaterial({ color: 0xD9A441 }),
+    teach: new THREE.MeshLambertMaterial({ color: 0xE0B457 }),
+    wc: new THREE.MeshLambertMaterial({ color: 0xE0B457, transparent: true, opacity: 0.7 }),
+    chair: new THREE.MeshLambertMaterial({ color: 0x8E9AA6 }),
+    chairDark: new THREE.MeshLambertMaterial({ color: 0x5F6B76 }),
+    ground: new THREE.MeshLambertMaterial({ color: 0x3b4149 }),
+    col: new THREE.MeshLambertMaterial({ color: 0xF6F3EC })
+  };
+  const shapeOf = (pts) => { const sh = new THREE.Shape(); pts.forEach((p, i) => i ? sh.lineTo(p[0], p[1]) : sh.moveTo(p[0], p[1])); sh.closePath(); return sh; };
+  function flat(pts, mat, y) { const m = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(pts)), mat); m.rotation.x = Math.PI / 2; m.position.y = y || 0; m.receiveShadow = true; scene.add(m); return m; }
+  function rectPts(x0, y0, x1, y1) { return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]; }
+  const walls = new THREE.Group(); scene.add(walls);
+  function wall(ax, az, bx, bz, h, t, mat, gaps) {
+    const L = Math.hypot(bx - ax, bz - az), ang = -Math.atan2(bz - az, bx - ax);
+    const segs = []; let d = 0; (gaps || []).slice().sort((p, q) => p[0] - q[0]).forEach(g => { if (g[0] > d) segs.push([d, g[0]]); d = g[1]; }); if (d < L) segs.push([d, L]);
+    segs.forEach(([d0, d1]) => { const len = d1 - d0; if (len <= 0.05) return; const m = new THREE.Mesh(new THREE.BoxGeometry(len, h, t), mat);
+      const mid = (d0 + d1) / 2; m.position.set(ax + (bx - ax) * mid / L, h / 2, az + (bz - az) * mid / L); m.rotation.y = ang; m.castShadow = true; m.receiveShadow = true; walls.add(m);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(len, 0.12, t + 0.02), mat === M.newWall ? M.newWall : (mat === M.glass ? M.glass : M.wallTop)); cap.position.set(m.position.x, h + 0.06, m.position.z); cap.rotation.y = ang; walls.add(cap); });
+  }
+  const HX = 10, HI = 9;
+  // ground + floors
+  const g = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), M.ground); g.rotation.x = -Math.PI / 2; g.position.y = -0.05; g.receiveShadow = true; scene.add(g);
+  flat(OUTLINE, M.floor, 0);
+  flat(HALL, M.hall, 0.02);
+  flat(rectPts(5.7, 46.7, 19.5, 65.9), M.room, 0.03);
+  flat(rectPts(19.2, 71.9, 31.8, 80), M.room, 0.03);
+  flat(rectPts(75, 25, 94, 45), M.room, 0.03);
+  flat(rectPts(68.2, 69.4, 82.1, 82.5), M.room, 0.03);
+  flat(rectPts(49.5, 7.5, 69, 25), M.newroom, 0.03);
+  flat(rectPts(19.5, 46.7, 26.5, 71.9), M.newroom, 0.03);
+  flat(rectPts(32, 68, 68.2, 80), M.newroom, 0.03);
+  flat(backstage, M.room, 0.03);
+  // platform
+  { const geo = new THREE.ExtrudeGeometry(shapeOf(platform), { depth: 1.25, bevelEnabled: false }); const m = new THREE.Mesh(geo, M.plat); m.rotation.x = Math.PI / 2; m.position.y = 1.25; m.castShadow = true; m.receiveShadow = true; scene.add(m); }
+  // teaching areas
+  teach.forEach(t => { const m = new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 5), M.teach); m.position.set(t.c[0], 0.25, t.c[1]); m.rotation.y = -Math.atan2(t.uy, t.ux); m.castShadow = true; scene.add(m); });
+  // exterior walls with door and glass segments
+  const ext = (a, b, gaps, mat) => wall(a[0], a[1], b[0], b[1], HX, 0.7, mat || M.wall, gaps);
+  for (let i = 0; i < OUTLINE.length; i++) {
+    const a = OUTLINE[i], b = OUTLINE[(i + 1) % OUTLINE.length];
+    if (a[0] === 58 && a[1] === 9 && b[0] === 81) { ext(a, [78, 9], null, M.glass); ext([78, 9], b, [[-3.7 + 0, 0]].filter(() => false)); continue; }
+    if (a[0] === 81 && a[1] === 9 && b[1] === 25) { ext(a, [81, 17], null, M.glass); ext([81, 17], b); continue; }
+    if (a[0] === 82 && a[1] === 82.5 && b[0] === 66.5) { ext(a, b, [[82 - 71.5, 82 - 68.5]]); continue; }
+    if (a[0] === 5 && a[1] === 79 && b[1] === 46.5) { ext(a, [5, 76.7]); ext([5, 71.3], [5, 52]); ext([5, 52], b, null, M.glass); continue; }
+    if (a[0] === 3 && a[1] === 82.5 && b[1] === 79) { ext(a, b); continue; }
+    ext(a, b);
+  }
+  // north door at x=74.3-77.4 on y=9 is in the segment (58,9)->(81,9); rebuild that bit: remove by drawing the gap version instead
+  // (handled above by splitting glass 58-78 and solid 78-81; the door sits in the glass run, so cut it out:)
+  walls.children.filter(m => m.material === M.glass && Math.abs(m.position.z - 9) < 0.01).forEach(m => walls.remove(m));
+  ext([58, 9], [74.3, 9], null, M.glass); ext([77.4, 9], [78, 9], null, M.glass); ext([78, 9], [81, 9]);
+  // interior existing walls
+  const inn = (a, b, gaps) => wall(a[0], a[1], b[0], b[1], HI, 0.45, M.wall, gaps);
+  inn(Q(10.6), Q(44.5), [[8.4, 11.4], [12.1, 15.1], [22.2, 25.2]]);
+  inn(S(10.6), Q(10.6)); inn(S(44.5), Q(44.5));
+  inn([5.7, 46.7], [19.5, 46.7], [[10.3, 13.3]]); inn([19.5, 46.7], [19.5, 65.9]); inn([19.5, 65.9], [5.7, 65.9]);
+  { const m = new THREE.Mesh(new THREE.BoxGeometry(0.3, 6, 6.5), M.glass); m.position.set(19.5, 4, 58); scene.add(m); }
+  inn([19.2, 71.9], [31.8, 71.9], [[8.8, 11.8]]); inn([19.2, 71.9], [19.2, 80], [[2.1, 5.1]]);
+  inn([75, 25], [81, 25], [[1, 4]]); inn([75, 25], [75, 45], [[12.5, 15.5]]); inn([75, 35.5], [94, 35.5]); inn([75, 45], [81, 45]);
+  inn([68.2, 69.4], [82.1, 69.4], [[0.8, 3.8]]); inn([68.2, 69.4], [68.2, 82.5]); inn([82.1, 69.4], [82.1, 82.5]); inn([68.2, 75.3], [82.1, 75.3]);
+  // new walls (option B)
+  const nw = (a, b, gaps) => wall(a[0], a[1], b[0], b[1], HI, 0.45, M.newWall, gaps);
+  nw([49.5, 25], [69, 25]); nw([69, 9], [69, 25], [[9, 12]]);
+  nw([26.5, 46.7], [26.5, 71.9], [[9.3, 12.3]]);
+  nw([32, 68], [68.2, 68]);
+  nw([68.7, 66.3], [81, 58]); nw([75, 51.1], [75, 61]);
+  { const g2 = new THREE.Group(); const body = new THREE.Mesh(new THREE.BoxGeometry(5.4, 1.0, 4.9), new THREE.MeshLambertMaterial({ color: 0x15181c })); body.position.y = 2.6; g2.add(body);
+    const lid = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.12, 4.2), new THREE.MeshLambertMaterial({ color: 0x23272c })); lid.position.set(0.4, 3.3, 0); lid.rotation.z = 0.55; g2.add(lid);
+    [[-2.3, -2.0], [-2.3, 2.0], [2.3, 0]].forEach(([lx, lz]) => { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 2.1, 0.35), body.material); leg.position.set(lx, 1.05, lz); g2.add(leg); });
+    const bench = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.6, 2.6), new THREE.MeshLambertMaterial({ color: 0x3a3f46 })); bench.position.set(-3.5, 0.8, 0); g2.add(bench);
+    g2.position.set(71, 1.25, 59); g2.rotation.y = -Math.atan2(0.561, -0.828); g2.traverse(m => { m.castShadow = true; }); scene.add(g2); }
+  // columns
+  COLS.forEach(c => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, HI, 16), M.col); m.position.set(c[0], HI / 2, c[1]); m.castShadow = true; scene.add(m); });
+  // wheelchair spaces
+  wc.forEach(w => { const wd = 2 * CW + 0.08; const ctr = toW(w.X + wd / 2, w.Y); const m = new THREE.Mesh(new THREE.BoxGeometry(wd, 0.06, CD), M.wc); m.position.set(ctr[0], 0.06, ctr[1]); m.rotation.y = -Math.atan2(-D[1], -D[0]); scene.add(m); });
+  // chairs (instanced): seat, back, two side legs; chair faces +Z in its own frame
+  const all = [];
+  hallSeats.forEach(c => { const ctr = toW(c.X + CW / 2, c.Y); all.push({ x: ctr[0], z: ctr[1], fx: Nn[0], fz: Nn[1], sx: CW / 1.6, sz: CD / 1.5 }); });
+  classChairs.forEach(c => all.push({ x: c.c[0], z: c.c[1], fx: c.fx, fz: c.fz, sx: c.cw / 1.6, sz: c.cd / 1.5 }));
+  const parts = [
+    [new THREE.BoxGeometry(1.5, 0.14, 1.45), M.chair, new THREE.Vector3(0, 1.5, 0)],
+    [new THREE.BoxGeometry(1.5, 1.35, 0.12), M.chair, new THREE.Vector3(0, 2.25, -0.66)],
+    [new THREE.BoxGeometry(0.08, 1.45, 1.3), M.chairDark, new THREE.Vector3(-0.66, 0.73, 0)],
+    [new THREE.BoxGeometry(0.08, 1.45, 1.3), M.chairDark, new THREE.Vector3(0.66, 0.73, 0)]
+  ];
+  const tmp = new THREE.Matrix4(), rot = new THREE.Matrix4(), tr = new THREE.Matrix4(), off = new THREE.Matrix4();
+  parts.forEach(([geo, mat, o]) => { const im = new THREE.InstancedMesh(geo, mat, all.length); im.castShadow = true; im.receiveShadow = true;
+    const scl = new THREE.Matrix4();
+    all.forEach((c, i) => { const th = Math.atan2(c.fx, c.fz); rot.makeRotationY(th); tr.makeTranslation(c.x, 0, c.z); scl.makeScale(c.sx || 1, 1, c.sz || 1); off.makeTranslation(o.x, o.y, o.z); tmp.copy(tr).multiply(rot).multiply(scl).multiply(off); im.setMatrixAt(i, tmp); });
+    im.instanceMatrix.needsUpdate = true; scene.add(im); });
+  // labels as sprites
+  function label(txt, x, z, y, scale) { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128; const cx = cv.getContext('2d'); cx.fillStyle = 'rgba(15,20,25,0.72)'; cx.fillRect(0, 0, 512, 128); cx.font = '600 54px Archivo, Arial, sans-serif'; cx.fillStyle = '#F3F6F8'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(txt, 256, 64);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false })); sp.position.set(x, y || 11, z); const s = scale || 1; sp.scale.set(14 * s, 3.5 * s, 1); scene.add(sp); return sp; }
+  label('PLATFORM', 64, 61, 6); label('NURSERY', 59, 16); label('CLASSROOM 1', 12.6, 56); label('CLASSROOM 2', 29, 29); label('CLASSROOM 3', 50, 74); label('LOBBY', 12, 73); label('HALLWAY', 23, 59, 10, 0.7);
+  label("WOMEN'S", 84.5, 30, 10, 0.8); label("MEN'S", 84.5, 40.5, 10, 0.8); label('FAMILY ALCOVE', 75, 15, 10, 0.75); label('MAIN ENTRY', 4, 74, 7, 0.8); label("PASTOR'S OFFICE", 76.5, 65, 10, 0.75); label('OFFICE ENTRY', 75, 76, 10, 0.75); label('PIANO', 71, 59, 7, 0.6);
+
+  document.getElementById('count').textContent = `${hallSeats.length} chairs + ${wc.length} wheelchair spaces in the hall · ${classSeats} classroom seats`;
+
+  // ---------- camera control ----------
+  const target = new THREE.Vector3(47, 2, 45);
+  let theta = -0.9, phi = 0.95, dist = 125;
+  function apply() { camera.position.set(target.x + dist * Math.sin(phi) * Math.sin(theta), target.y + dist * Math.cos(phi), target.z + dist * Math.sin(phi) * Math.cos(theta)); camera.lookAt(target); }
+  const presets = {
+    vOver: { t: [47, 2, 45], th: -0.9, ph: 0.95, d: 125 },
+    vBack: { t: [60, 3, 56], th: Math.atan2(38 - 60, 32 - 56), ph: 1.45, d: 36 },
+    vPlat: { t: [40, 2.5, 40], th: Math.atan2(64 - 40, 58 - 40), ph: 1.45, d: 30 },
+    vDoor: { t: [26, 4, 55], th: Math.atan2(8 - 26, 74 - 55), ph: 1.5, d: 26 },
+    vNurs: { t: [70, 3, 24], th: Math.atan2(76 - 70, 12 - 24), ph: 1.3, d: 22 }
+  };
+  function go(id) { const p = presets[id]; target.set(p.t[0], p.t[1], p.t[2]); theta = p.th; phi = p.ph; dist = p.d; apply(); document.querySelectorAll('.bar button[id^="v"]').forEach(b => b.classList.toggle('on', b.id === id)); }
+  Object.keys(presets).forEach(id => document.getElementById(id).addEventListener('click', () => go(id)));
+  let lowered = false;
+  document.getElementById('tWalls').addEventListener('click', (e) => { lowered = !lowered; walls.scale.y = lowered ? 0.35 : 1; e.target.textContent = lowered ? 'Full-height walls' : 'Lower walls'; e.target.classList.toggle('on', lowered); });
+  const el = renderer.domElement;
+  let drag = null;
+  el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, b: e.button, shift: e.shiftKey }; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    if (drag.b === 2 || drag.shift) { const right = new THREE.Vector3(Math.cos(theta), 0, -Math.sin(theta)); const fwd = new THREE.Vector3(-Math.sin(theta), 0, -Math.cos(theta)); target.addScaledVector(right, -dx * dist * 0.0012); target.addScaledVector(fwd, -dy * dist * 0.0012); }
+    else { theta -= dx * 0.006; phi = Math.min(1.52, Math.max(0.15, phi - dy * 0.006)); }
+    apply(); });
+  el.addEventListener('pointerup', () => { drag = null; });
+  el.addEventListener('contextmenu', (e) => e.preventDefault());
+  el.addEventListener('wheel', (e) => { e.preventDefault(); dist = Math.min(300, Math.max(8, dist * (1 + e.deltaY * 0.0012))); apply(); }, { passive: false });
+  let pinch = null;
+  el.addEventListener('touchstart', (e) => { if (e.touches.length === 2) pinch = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }, { passive: true });
+  el.addEventListener('touchmove', (e) => { if (e.touches.length === 2 && pinch) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); dist = Math.min(300, Math.max(8, dist * pinch / d)); pinch = d; apply(); } }, { passive: true });
+  function resize() { const w = view.clientWidth, h = view.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  window.addEventListener('resize', resize);
+  resize(); apply();
+  const h0 = (location.hash || '').replace('#', ''); if (presets[h0]) go(h0);
+  (function loop() { renderer.render(scene, camera); requestAnimationFrame(loop); })();
+})();
+</script>
+
+</body>
+</html>
