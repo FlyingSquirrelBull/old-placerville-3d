@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+</head>
+<body style="margin:0;height:100vh;display:flex;flex-direction:column">
+<title>Old Placerville Outside in 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --paper: #FBFAF5; --panel: #FFFFFF; --ink: #1E2730; --muted: #5F6B76; --rule: #D8DCD6; --accent: #0E7C86; --accent-soft: #D7ECEE;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif; --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", Menlo, monospace; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --paper: #14191E; --panel: #1B2228; --ink: #E6EBEF; --muted: #A4AFB9; --rule: #2E3842; --accent: #45B8C2; --accent-soft: #163B40; } }
+  :root[data-theme="dark"] { color-scheme: dark; --paper: #14191E; --panel: #1B2228; --ink: #E6EBEF; --muted: #A4AFB9; --rule: #2E3842; --accent: #45B8C2; --accent-soft: #163B40; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15px; display: flex; flex-direction: column; min-height: 100%; }
+  header { padding: 12px 16px 10px; border-bottom: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  h1 { font-family: var(--display); font-size: 20px; margin: 0; }
+  .sub { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 16px; border-bottom: 1px solid var(--rule); align-items: center; }
+  button { font-family: var(--body); font-size: 14px; padding: 6px 12px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); border-radius: 6px; cursor: pointer; }
+  button:hover { border-color: var(--accent); } button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } button.on { background: var(--accent-soft); border-color: var(--accent); }
+  .spacer { flex: 1; }
+  #view { flex: 1; min-height: 420px; position: relative; background: #9fc3e0; }
+  #view canvas { display: block; width: 100%; height: 100%; }
+  .hint { position: absolute; left: 12px; bottom: 10px; font-family: var(--mono); font-size: 11.5px; color: #fff; background: rgba(15,20,25,0.55); padding: 4px 8px; border-radius: 4px; pointer-events: none; }
+</style>
+<header>
+  <h1>10360 Old Placerville Rd, outside in 3D</h1>
+  <div class="sub">building footprint from the listing plan · 18 ft brick walls · site schematic · 1 unit = 1 ft</div>
+</header>
+<div class="bar">
+  <button id="vOver" class="on">Overview</button>
+  <button id="vRoad">From the road</button>
+  <button id="vDoor">Front door</button>
+  <button id="vLot">From the parking lot</button>
+  <span class="spacer"></span>
+  <button id="tSteeple">Show steeple concept</button>
+  <button id="tSuite" class="on">Highlight the suite</button>
+</div>
+<div id="view"><div class="hint">drag to orbit · wheel or pinch to zoom · right-drag or shift-drag to pan</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  const BLDG = [[186.5,-80.9],[188.5,-80.9],[205.5,-63.9],[205.5,-56.9],[202.5,-55.9],[202.5,55.1],[210.5,55.1],[210.5,52.1],[219.5,52.1],[219.5,86.1],[202.5,86.1],[202.5,84.1],[164.5,84.1],[164.5,86.1],[149.5,86.1],[149.5,84.1],[83.5,84.1],[83.5,86.1],[67.5,86.1],[67.5,84.1],[20.5,84.1],[20.5,86.1],[2.5,86.1],[2.5,77.1],[4.5,77.1],[4.5,48.1],[2.5,48.1],[2.5,37.1],[8.5,33.1],[12.5,34.1],[28.5,23.1],[32.5,22.1],[41.5,16.1],[41.5,12.1],[49.5,7.1],[59.5,7.1],[59.5,9.1],[134.5,9.1],[134.5,-37.9],[132.5,-37.9],[132.5,-45.9],[138.5,-49.9],[142.5,-48.9],[146.5,-52.9],[150.5,-53.9],[163.5,-63.9],[179.5,-72.9],[181.5,-77.9],[186.5,-79.9]];
+  const SUITE = [[49.5,7.5],[58,7.5],[58,9],[81,9],[81,25],[94,25],[94,45],[81,45],[81,63],[86,63],[86,80],[82,80],[82,82.5],[66.5,82.5],[66.5,80],[19.5,80],[19.5,82.5],[3,82.5],[3,79],[5,79],[5,46.5],[3,46.5],[3,39]];
+  const D = [-0.828, 0.561], N = [0.561, 0.828];
+  const H = 18;
+  const view = document.getElementById('view');
+  const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); renderer.shadowMap.enabled = true; view.appendChild(renderer.domElement);
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(0x9fc3e0); scene.fog = new THREE.Fog(0x9fc3e0, 500, 1400);
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.5, 3000);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x556655, 0.85));
+  const sun = new THREE.DirectionalLight(0xfff4e0, 0.9); sun.position.set(-150, 220, 120); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); const sc = sun.shadow.camera; sc.left = -260; sc.right = 260; sc.top = 260; sc.bottom = -260; sc.near = 10; sc.far = 700; scene.add(sun);
+  const M = {
+    lawn: new THREE.MeshLambertMaterial({ color: 0x8fb36a }), road: new THREE.MeshLambertMaterial({ color: 0x5a5d62 }), lot: new THREE.MeshLambertMaterial({ color: 0x6f7378 }), curb: new THREE.MeshLambertMaterial({ color: 0xd9d6cc }),
+    brick: new THREE.MeshLambertMaterial({ color: 0x8e4f3d }), parapet: new THREE.MeshLambertMaterial({ color: 0x3a3f46 }), roof: new THREE.MeshLambertMaterial({ color: 0xcfcac0 }), glass: new THREE.MeshLambertMaterial({ color: 0x2b4a63, transparent: true, opacity: 0.85 }),
+    frame: new THREE.MeshLambertMaterial({ color: 0x2a2f36 }), suite: new THREE.MeshLambertMaterial({ color: 0x45b8c2, transparent: true, opacity: 0.35 }), white: new THREE.MeshLambertMaterial({ color: 0xf4f2ec }), steeple: new THREE.MeshLambertMaterial({ color: 0x3f444c }),
+    trunk: new THREE.MeshLambertMaterial({ color: 0x5b4330 }), leaf: new THREE.MeshLambertMaterial({ color: 0x3f7a3a }), leaf2: new THREE.MeshLambertMaterial({ color: 0x2f5f33 }), stripe: new THREE.MeshLambertMaterial({ color: 0xe8e4d8 }), yellow: new THREE.MeshLambertMaterial({ color: 0xd9b23a })
+  };
+  const shapeOf = (pts) => { const sh = new THREE.Shape(); pts.forEach((p, i) => i ? sh.lineTo(p[0], p[1]) : sh.moveTo(p[0], p[1])); sh.closePath(); return sh; };
+  function flat(pts, mat, y) { const m = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(pts)), mat); m.rotation.x = Math.PI / 2; m.position.y = y || 0; m.receiveShadow = true; m.material.side = THREE.DoubleSide; scene.add(m); return m; }
+  function box(w, h, d, mat, x, y, z, ry) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); if (ry) m.rotation.y = ry; m.castShadow = true; m.receiveShadow = true; scene.add(m); return m; }
+  // ground
+  const g = new THREE.Mesh(new THREE.PlaneGeometry(1600, 1600), M.lawn); g.rotation.x = -Math.PI / 2; g.position.set(60, -0.1, 20); g.receiveShadow = true; scene.add(g);
+  // road along the NW facade line, 75 ft off, 64 wide; plus Mather Blvd to the south
+  const c0 = [49.5 - 0.561 * 75, 7.1 - 0.828 * 75];
+  { const m = box(560, 0.3, 64, M.road, c0[0] - D[0] * 20, 0.05, c0[1] - D[1] * 20, -Math.atan2(D[1], D[0])); const cl = box(560, 0.32, 0.6, M.yellow, m.position.x, 0.2, m.position.z, m.rotation.y); cl.castShadow = false; }
+  box(600, 0.3, 40, M.road, 110, 0.05, 190);
+  // parking lot
+  box(250, 0.3, 70, M.lot, 121, 0.08, 129); box(24, 0.3, 30, M.lot, 72, 0.08, 174);
+  for (let i = 0; i <= 24; i++) { box(0.4, 0.32, 18, M.stripe, 2 + i * 9, 0.26, 109); box(0.4, 0.32, 18, M.stripe, 2 + i * 9, 0.26, 151); }
+  for (let i = 0; i <= 7; i++) box(18, 0.32, 0.4, M.stripe, 231, 0.26, 100 + i * 9);
+  // a few parked cars
+  [[20, 109], [47, 109], [83, 109], [110, 109], [155, 151], [191, 151], [209, 109]].forEach(([x, z], i) => { const col = [0xd8d8d8, 0x2c3e50, 0x8e1b1b, 0xe9e9e9, 0x1f2a36, 0x6b7c8c, 0xc9c9c9][i]; box(6.5, 4.2, 15, new THREE.MeshLambertMaterial({ color: col }), x + 4.5, 2.2, z); box(5.6, 1.9, 7.5, new THREE.MeshLambertMaterial({ color: 0x1a1d22 }), x + 4.5, 5.2, z - 0.5); });
+  // building: extruded footprint, parapet cap, roof
+  { const geo = new THREE.ExtrudeGeometry(shapeOf(BLDG), { depth: H, bevelEnabled: false }); const m = new THREE.Mesh(geo, M.brick); m.rotation.x = Math.PI / 2; m.position.y = H; m.castShadow = true; m.receiveShadow = true; scene.add(m);
+    const roof = flat(BLDG, M.roof, H + 0.05); roof.receiveShadow = true;
+    const cap = new THREE.Mesh(new THREE.ExtrudeGeometry(shapeOf(BLDG), { depth: 1.2, bevelEnabled: false }), M.roof); cap.rotation.x = Math.PI / 2; cap.position.y = H + 1.2; scene.add(cap);
+    const capEdge = new THREE.LineSegments(new THREE.EdgesGeometry(cap.geometry, 20), new THREE.LineBasicMaterial({ color: 0x3a3f46 })); capEdge.rotation.x = Math.PI / 2; capEdge.position.y = H + 1.2; scene.add(capEdge);
+    for (let i = 0; i < BLDG.length; i++) { const a = BLDG[i], b = BLDG[(i + 1) % BLDG.length]; const L = Math.hypot(b[0] - a[0], b[1] - a[1]); const m = new THREE.Mesh(new THREE.BoxGeometry(L, 1.4, 1.0), M.parapet); m.position.set((a[0] + b[0]) / 2, H + 0.7, (a[1] + b[1]) / 2); m.rotation.y = -Math.atan2(b[1] - a[1], b[0] - a[0]); scene.add(m); }
+    // rooftop units
+    [[90, 40], [160, 30], [175, -20], [60, 50]].forEach(([x, z]) => box(10, 4, 7, M.roof, x, H + 2, z)); }
+  // window runs: along a wall segment from a to b, from height 3 to 9 (or 1 to 9 for floor-to-ceiling)
+  function windows(a, b, y0, y1, inset, segs) { const L = Math.hypot(b[0] - a[0], b[1] - a[1]), ang = -Math.atan2(b[1] - a[1], b[0] - a[0]); const nx = (b[1] - a[1]) / L, nz = -(b[0] - a[0]) / L; // outward normal (left of direction)
+    const runs = segs || [[0.08 * L, 0.92 * L]];
+    runs.forEach(([d0, d1]) => { const mid = (d0 + d1) / 2; const cx = a[0] + (b[0] - a[0]) * mid / L + nx * inset, cz = a[1] + (b[1] - a[1]) * mid / L + nz * inset; const m = box(d1 - d0, y1 - y0, 0.5, M.glass, cx, (y0 + y1) / 2, cz, ang); m.castShadow = false; const f = box(d1 - d0 + 0.6, 0.35, 0.7, M.frame, cx, y1 + 0.1, cz, ang); f.castShadow = false; const f2 = box(d1 - d0 + 0.6, 0.35, 0.7, M.frame, cx, y0 - 0.1, cz, ang); f2.castShadow = false; for (let d = d0 + 4; d < d1; d += 4) { const mx = a[0] + (b[0] - a[0]) * d / L + nx * inset, mz = a[1] + (b[1] - a[1]) * d / L + nz * inset; const mu = box(0.3, y1 - y0, 0.7, M.frame, mx, (y0 + y1) / 2, mz, ang); mu.castShadow = false; } }); }
+  // Walls run clockwise in plan (y down) so the outward normal is to the left of travel in our math; inset negative pushes outside
+  const out = -0.45;
+  windows([2.5, 37.1], [49.5, 7.1], 1, 9, out, [[3, 14], [17, 27], [30, 40], [43, 54]]);          // suite road side, floor-to-ceiling
+  windows([49.5, 7.1], [134.5, 9.1], 3, 9, out, [[9, 29], [38, 60], [66, 80]]);                    // north wall of the main block
+  windows([134.5, -37.9], [186.5, -80.9], 1, 9, out, [[4, 24], [30, 50], [56, 64]]);               // wing, road side
+  windows([2.5, 86.1], [2.5, 37.1], 3, 9, out, [[16, 34]]);                                        // west wall glass band
+  windows([219.5, 86.1], [2.5, 86.1], 3, 9, out, [[30, 60], [90, 120], [150, 180], [196, 212]]);   // south, parking side
+  windows([202.5, -55.9], [202.5, 55.1], 3, 9, out, [[10, 40], [60, 100]]);                        // east
+  // suite doors: glass double door on the west wall with a canopy, parking-side vestibule door, rear door
+  box(0.6, 8, 6, M.glass, 2.3, 4, 74); box(8, 0.5, 10, M.parapet, -1.5, 9.3, 74); box(0.5, 9.3, 0.5, M.frame, -5.2, 4.65, 69.5); box(0.5, 9.3, 0.5, M.frame, -5.2, 4.65, 78.5);
+  box(3.2, 7.5, 0.6, M.glass, 70, 3.75, 82.6); box(3.2, 7.5, 0.6, M.frame, 75.85, 3.75, 9.1);
+  // suite highlight on the ground around the footprint + a floating outline
+  const suiteMesh = flat(SUITE, M.suite, H + 0.5); suiteMesh.castShadow = false;
+  const suiteEdge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.ExtrudeGeometry(shapeOf(SUITE), { depth: H + 0.6, bevelEnabled: false })), new THREE.LineBasicMaterial({ color: 0x45b8c2 })); suiteEdge.rotation.x = Math.PI / 2; suiteEdge.position.y = H + 0.6; scene.add(suiteEdge);
+  const suiteGroup = [suiteMesh, suiteEdge];
+  // trees: redwood-ish cones near the SW corner and along the road
+  function tree(x, z, h, r, dark) { box(1.6, h * 0.35, 1.6, M.trunk, x, h * 0.17, z); const c = new THREE.Mesh(new THREE.ConeGeometry(r, h * 0.8, 10), dark ? M.leaf2 : M.leaf); c.position.set(x, h * 0.3 + h * 0.4, z); c.castShadow = true; scene.add(c); }
+  function roundTree(x, z, h, r) { box(1.4, h * 0.5, 1.4, M.trunk, x, h * 0.25, z); const s = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 10), M.leaf); s.position.set(x, h * 0.5 + r * 0.7, z); s.castShadow = true; scene.add(s); }
+  tree(-30, 60, 70, 12, true); tree(-18, 40, 60, 10, false); tree(-42, 95, 55, 10, true);
+  for (let t = -40; t <= 220; t += 36) { const p = [c0[0] + D[0] * t + N[0] * 44, c0[1] + D[1] * t + N[1] * 44]; roundTree(p[0], p[1], 22, 9); }
+  roundTree(120, 170, 24, 10); roundTree(250, 60, 26, 11); roundTree(240, 140, 22, 9);
+  // steeple concept (hidden by default): white gabled entry 24 wide x 12 deep at the front door, tower + spire to 55 ft
+  const steeple = new THREE.Group(); scene.add(steeple); steeple.visible = false;
+  { const cz = 74, cx = -3.5; const base = new THREE.Mesh(new THREE.BoxGeometry(12, 14, 24), M.white); base.position.set(cx, 7, cz); base.castShadow = true; steeple.add(base);
+    const gable = new THREE.Shape(); gable.moveTo(-13, 0); gable.lineTo(13, 0); gable.lineTo(0, 8); gable.closePath(); const gm = new THREE.Mesh(new THREE.ExtrudeGeometry(gable, { depth: 12, bevelEnabled: false }), M.white); gm.rotation.y = Math.PI / 2; gm.position.set(cx - 6, 14, cz + 13); gm.castShadow = true; steeple.add(gm);
+    const roofL = new THREE.Mesh(new THREE.BoxGeometry(12.6, 0.5, 15.5), M.steeple); roofL.position.set(cx, 18.2, cz - 6.6); roofL.rotation.x = Math.atan2(8, 13); steeple.add(roofL);
+    const roofR = new THREE.Mesh(new THREE.BoxGeometry(12.6, 0.5, 15.5), M.steeple); roofR.position.set(cx, 18.2, cz + 6.6); roofR.rotation.x = -Math.atan2(8, 13); steeple.add(roofR);
+    const tower = new THREE.Mesh(new THREE.BoxGeometry(10, 22, 10), M.white); tower.position.set(cx, 25, cz); tower.castShadow = true; steeple.add(tower);
+    const belfry = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 8), M.white); belfry.position.set(cx, 40, cz); steeple.add(belfry);
+    [[0, 0, 4.1, 0], [0, 0, -4.1, 0], [4.1, 0, 0, Math.PI / 2], [-4.1, 0, 0, Math.PI / 2]].forEach(([dx, dy, dz, ry]) => { const l = new THREE.Mesh(new THREE.BoxGeometry(4.4, 5.5, 0.3), M.steeple); l.position.set(cx + dx, 40, cz + dz); l.rotation.y = ry; steeple.add(l); });
+    const spire = new THREE.Mesh(new THREE.ConeGeometry(5.6, 11, 4), M.steeple); spire.position.set(cx, 49.5, cz); spire.rotation.y = Math.PI / 4; spire.castShadow = true; steeple.add(spire);
+    const door = new THREE.Mesh(new THREE.BoxGeometry(0.5, 8, 6), M.steeple); door.position.set(cx - 6.1, 4, cz); steeple.add(door);
+    const tw = new THREE.Mesh(new THREE.BoxGeometry(0.5, 5, 3), M.glass); tw.position.set(cx - 5.2, 30, cz); steeple.add(tw);
+    // fence along the road edge and a small play structure on the lawn
+    for (let t = -30; t <= 200; t += 6) { const p = [c0[0] + D[0] * t + N[0] * 38, c0[1] + D[1] * t + N[1] * 38]; const pk = new THREE.Mesh(new THREE.BoxGeometry(0.3, 4, 0.3), M.steeple); pk.position.set(p[0], 2, p[1]); steeple.add(pk); }
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(236, 0.3, 0.3), M.steeple); const rp = [c0[0] + D[0] * 85 + N[0] * 38, c0[1] + D[1] * 85 + N[1] * 38]; rail.position.set(rp[0], 3.6, rp[1]); rail.rotation.y = -Math.atan2(D[1], D[0]); steeple.add(rail);
+    const play = new THREE.Mesh(new THREE.BoxGeometry(10, 8, 8), new THREE.MeshLambertMaterial({ color: 0xd9522c })); play.position.set(60, 4, -28); steeple.add(play); const slide = new THREE.Mesh(new THREE.BoxGeometry(3, 0.6, 10), new THREE.MeshLambertMaterial({ color: 0xe9c33a })); slide.position.set(67, 3.5, -22); slide.rotation.x = 0.55; steeple.add(slide); }
+  // camera control
+  const target = new THREE.Vector3(80, 6, 30); let theta = 2.4, phi = 1.05, dist = 330;
+  function apply() { camera.position.set(target.x + dist * Math.sin(phi) * Math.sin(theta), target.y + dist * Math.cos(phi), target.z + dist * Math.sin(phi) * Math.cos(theta)); camera.lookAt(target); }
+  const presets = { vOver: { t: [80, 6, 30], th: 2.4, ph: 1.05, d: 330 }, vRoad: { t: [40, 10, 30], th: Math.atan2(-50 - 40, -40 - 30), ph: 1.5, d: 150 }, vDoor: { t: [3, 9, 74], th: Math.atan2(-55 - 3, 60 - 74), ph: 1.42, d: 75 }, vLot: { t: [110, 9, 86], th: Math.atan2(140 - 110, 170 - 86), ph: 1.47, d: 110 } };
+  function go(id) { const p = presets[id]; target.set(p.t[0], p.t[1], p.t[2]); theta = p.th; phi = p.ph; dist = p.d; apply(); document.querySelectorAll('.bar button[id^="v"]').forEach(b => b.classList.toggle('on', b.id === id)); }
+  Object.keys(presets).forEach(id => document.getElementById(id).addEventListener('click', () => go(id)));
+  document.getElementById('tSteeple').addEventListener('click', (e) => { steeple.visible = !steeple.visible; e.target.classList.toggle('on', steeple.visible); e.target.textContent = steeple.visible ? 'Hide steeple concept' : 'Show steeple concept'; });
+  document.getElementById('tSuite').addEventListener('click', (e) => { const on = !suiteMesh.visible; suiteGroup.forEach(m => m.visible = on); e.target.classList.toggle('on', on); });
+  const el = renderer.domElement; let drag = null;
+  el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, b: e.button, shift: e.shiftKey }; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    if (drag.b === 2 || drag.shift) { const right = new THREE.Vector3(Math.cos(theta), 0, -Math.sin(theta)); const fwd = new THREE.Vector3(-Math.sin(theta), 0, -Math.cos(theta)); target.addScaledVector(right, -dx * dist * 0.0012); target.addScaledVector(fwd, -dy * dist * 0.0012); }
+    else { theta -= dx * 0.006; phi = Math.min(1.54, Math.max(0.12, phi - dy * 0.006)); } apply(); });
+  el.addEventListener('pointerup', () => { drag = null; }); el.addEventListener('contextmenu', (e) => e.preventDefault());
+  el.addEventListener('wheel', (e) => { e.preventDefault(); dist = Math.min(900, Math.max(15, dist * (1 + e.deltaY * 0.0012))); apply(); }, { passive: false });
+  let pinch = null; el.addEventListener('touchstart', (e) => { if (e.touches.length === 2) pinch = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }, { passive: true });
+  el.addEventListener('touchmove', (e) => { if (e.touches.length === 2 && pinch) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); dist = Math.min(900, Math.max(15, dist * pinch / d)); pinch = d; apply(); } }, { passive: true });
+  function resize() { const w = view.clientWidth, h = view.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  window.addEventListener('resize', resize); resize(); apply();
+  const h0 = (location.hash || '').replace('#', ''); if (presets[h0]) go(h0); if (h0 === 'steeple') { steeple.visible = true; document.getElementById('tSteeple').classList.add('on'); document.getElementById('tSteeple').textContent = 'Hide steeple concept'; }
+  (function loop() { renderer.render(scene, camera); requestAnimationFrame(loop); })();
+})();
+</script>
+
+</body>
+</html>

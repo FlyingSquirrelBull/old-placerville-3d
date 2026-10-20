@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+</head>
+<body style="margin:0">
+<title>Old Placerville Site Plan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --paper: #FBFAF5; --panel: #FFFFFF; --ink: #1E2730; --muted: #5F6B76; --rule: #D8DCD6;
+    --wall: #2A3540; --suite: #F1EDE0; --bldg: #E4DCCB; --brick: #9A5A47; --brickDark: #6E3F32; --glass: #6FB0D6; --glassSoft: #BFDCEB;
+    --lawn: #CFE0B8; --asphalt: #CBCBC6; --asphaltLine: #F4F4EF; --road: #B9B9B4; --accent: #0E7C86; --accent-soft: #D7ECEE; --amber: #C98F2A; --amber-soft: #F3E3BE; --white: #F7F5F0; --steeple: #4A4F57;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif; --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --paper: #14191E; --panel: #1B2228; --ink: #E6EBEF; --muted: #A4AFB9; --rule: #2E3842; --wall: #DCE3E9; --suite: #2A3139; --bldg: #333A42; --lawn: #2F4030; --asphalt: #3A3F45; --asphaltLine: #8C949C; --road: #30353B; --accent: #45B8C2; --accent-soft: #163B40; --amber: #E2B55A; --amber-soft: #4A3A18; --white: #D8DBDF; --glassSoft: #3F6A85; } }
+  :root[data-theme="dark"] { color-scheme: dark; --paper: #14191E; --panel: #1B2228; --ink: #E6EBEF; --muted: #A4AFB9; --rule: #2E3842; --wall: #DCE3E9; --suite: #2A3139; --bldg: #333A42; --lawn: #2F4030; --asphalt: #3A3F45; --asphaltLine: #8C949C; --road: #30353B; --accent: #45B8C2; --accent-soft: #163B40; --amber: #E2B55A; --amber-soft: #4A3A18; --white: #D8DBDF; --glassSoft: #3F6A85; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; }
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 14px; margin-bottom: 22px; display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: baseline; justify-content: space-between; }
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(26px, 4vw, 38px); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  h2 { font-family: var(--display); font-weight: 700; font-size: 22px; margin: 34px 0 6px; }
+  h2 .tag { font-family: var(--mono); font-weight: 400; font-size: 12px; color: var(--muted); margin-left: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+  p { max-width: 70ch; margin: 6px 0; }
+  .plan { background: var(--panel); border: 1px solid var(--rule); overflow-x: auto; margin-top: 12px; }
+  .plan svg { display: block; min-width: 720px; width: 100%; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 20px; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .legend span::before { content: ""; display: inline-block; width: 18px; height: 10px; margin-right: 6px; vertical-align: -1px; border: 1px solid var(--muted); }
+  .l-suite::before { background: var(--accent-soft); border-color: var(--accent) !important; } .l-bldg::before { background: var(--bldg); } .l-lawn::before { background: var(--lawn); } .l-lot::before { background: var(--asphalt); } .l-glass::before { background: var(--glassSoft); }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px 40px; margin-top: 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  ul { padding-left: 20px; max-width: 72ch; } li { margin: 6px 0; }
+  .note { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+  @media print {
+    @page { size: letter landscape; margin: 0.45in; }
+    body { background: #fff; color: #1E2730; font-size: 11.5px; }
+    .wrap { max-width: none; padding: 0; }
+    h2 { break-before: page; margin-top: 0; } h2, h2 + p { break-after: avoid; }
+    .plan { border: none; overflow: visible; break-inside: avoid; } .plan svg { min-width: 0; max-height: 5.6in; width: auto; margin: 0 auto; }
+    .legend, .note { font-size: 10px; } table { font-size: 10.5px; } .cols { break-inside: avoid; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>10360 Old Placerville Rd, the building and the site</h1>
+    <div class="sub">±20,495 SF · 1 story · built 1999 · 1.69 acres · 55 spaces · drawn 2026-10-20</div>
+  </header>
+  <p>The whole building, traced from the listing brochure's floor plan at the same scale as the suite plans, with the church's suite marked. Parking, road and landscaping are schematic from the satellite view and the listing's space count, not surveyed. The elevations are drawn from the walk-through and street photos: brick, flat roof, about 18 ft to the parapet, floor-to-ceiling glass on the road side.</p>
+
+  <h2>Site plan <span class="tag">building footprint to scale · site schematic</span></h2>
+  <div class="plan" id="site"></div>
+  <div class="legend"><span class="l-suite">church suite ±5,685 SF</span><span class="l-bldg">rest of building, leased</span><span class="l-glass">glass</span><span class="l-lawn">lawn and planting</span><span class="l-lot">parking, 55 spaces</span></div>
+
+  <h2>Elevations <span class="tag">as built, from photos</span></h2>
+  <div class="plan" id="elev"></div>
+
+  <h2>Entry concept <span class="tag">white gable and steeple at the front door</span></h2>
+  <p>The idea from the rendering: keep the brick, add a white gabled entry with a steeple at the left front door, and a fenced lawn with play structure along the road. Drawn here to the building's real height so the proportions are honest; the steeple shown tops out about 55 ft above grade.</p>
+  <div class="plan" id="concept"></div>
+
+  <div class="cols">
+    <div>
+      <table>
+        <thead><tr><th>Site facts</th><th class="num"></th></tr></thead>
+        <tbody>
+          <tr><td>Building</td><td class="num">±20,495 SF, 1 story, 1999</td></tr>
+          <tr><td>Church suite (southwest end)</td><td class="num">±5,685 RSF</td></tr>
+          <tr><td>Footprint, overall</td><td class="num">≈217 × 167 ft</td></tr>
+          <tr><td>Lot</td><td class="num">1.69 ac (73,616 SF)</td></tr>
+          <tr><td>Parking</td><td class="num">55 surface spaces, shared</td></tr>
+          <tr><td>Zoning</td><td class="num">MP, Industrial Park</td></tr>
+          <tr><td>APN</td><td class="num">077-0050-068</td></tr>
+          <tr><td>Wall height to parapet</td><td class="num">≈18 ft (from photo scale)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <ul>
+        <li><strong>Three suite doors to the outside:</strong> the glass double door on the west wall (the church's front door), the parking-side vestibule (office entry and stage door), and the single door at the north end (rear exit through the family alcove).</li>
+        <li><strong>Parking math for a church:</strong> 175 seats at the usual 1 space per 4 seats needs about 44 spaces. The lot has 55, shared with the leased 14,810 SF; on Sunday the other tenants are closed. Get Sunday use in writing.</li>
+        <li><strong>The steeple is a concept, not a drawing for permit.</strong> It would need its own structural design and a height check against the MP zone's limits.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const fmt = (n) => (Math.round(n * 100) / 100).toString();
+  const BLDG = [[186.5,-80.9],[188.5,-80.9],[205.5,-63.9],[205.5,-56.9],[202.5,-55.9],[202.5,55.1],[210.5,55.1],[210.5,52.1],[219.5,52.1],[219.5,86.1],[202.5,86.1],[202.5,84.1],[164.5,84.1],[164.5,86.1],[149.5,86.1],[149.5,84.1],[83.5,84.1],[83.5,86.1],[67.5,86.1],[67.5,84.1],[20.5,84.1],[20.5,86.1],[2.5,86.1],[2.5,77.1],[4.5,77.1],[4.5,48.1],[2.5,48.1],[2.5,37.1],[8.5,33.1],[12.5,34.1],[28.5,23.1],[32.5,22.1],[41.5,16.1],[41.5,12.1],[49.5,7.1],[59.5,7.1],[59.5,9.1],[134.5,9.1],[134.5,-37.9],[132.5,-37.9],[132.5,-45.9],[138.5,-49.9],[142.5,-48.9],[146.5,-52.9],[150.5,-53.9],[163.5,-63.9],[179.5,-72.9],[181.5,-77.9],[186.5,-79.9]];
+  const SUITE = 'M49.5 7.5 H58 V9 H81 V25 H94 V45 H81 V63 H86 V80 H82 V82.5 H66.5 V80 H19.5 V82.5 H3 V79 H5 V46.5 H3 V39 Z';
+  const poly = (pts, attrs) => `<polygon points="${pts.map(p => fmt(p[0]) + ',' + fmt(p[1])).join(' ')}" ${attrs}/>`;
+  const rect = (x, y, w, h, a) => `<rect x="${fmt(x)}" y="${fmt(y)}" width="${fmt(w)}" height="${fmt(h)}" ${a}/>`;
+  const line = (x1, y1, x2, y2, a) => `<line x1="${fmt(x1)}" y1="${fmt(y1)}" x2="${fmt(x2)}" y2="${fmt(y2)}" ${a}/>`;
+  const text = (x, y, t, a) => `<text x="${fmt(x)}" y="${fmt(y)}" ${a || ''}>${t}</text>`;
+  const lab = 'fill="var(--ink)" font-size="5" text-anchor="middle" font-family="IBM Plex Mono, monospace"';
+  const labS = 'fill="var(--muted)" font-size="3.6" text-anchor="middle" font-family="IBM Plex Mono, monospace"';
+  const D = [-0.828, 0.561], N = [0.561, 0.828];
+
+  function site() {
+    let o = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-110 -150 400 330" role="img" font-family="IBM Plex Mono, Menlo, monospace">`;
+    // lawn everywhere on the lot
+    o += rect(-110, -150, 400, 330, 'fill="var(--lawn)"');
+    // road: band parallel to the NW facade, 75 ft off it, 64 ft wide
+    const c0 = [49.5 + 7.5 * 0 - 0.561 * 75, 7.1 - 0.828 * 75];
+    const roadPts = (half) => { const a = [c0[0] + D[0] * 220, c0[1] + D[1] * 220], b = [c0[0] - D[0] * 260, c0[1] - D[1] * 260]; return [[a[0] - N[0] * half, a[1] - N[1] * half], [b[0] - N[0] * half, b[1] - N[1] * half], [b[0] + N[0] * half, b[1] + N[1] * half], [a[0] + N[0] * half, a[1] + N[1] * half]]; };
+    o += poly(roadPts(32), 'fill="var(--road)"');
+    // center line
+    { const a = [c0[0] + D[0] * 220, c0[1] + D[1] * 220], b = [c0[0] - D[0] * 260, c0[1] - D[1] * 260]; o += line(a[0], a[1], b[0], b[1], 'stroke="var(--amber)" stroke-width="0.8" stroke-dasharray="6 3"'); }
+    { const p = [c0[0] - D[0] * 90 + N[0] * 40, c0[1] - D[1] * 90 + N[1] * 40]; o += `<text x="${fmt(p[0])}" y="${fmt(p[1])}" fill="var(--ink)" font-size="6" text-anchor="middle" transform="rotate(-34 ${fmt(p[0])} ${fmt(p[1])})">OLD PLACERVILLE RD</text>`; }
+    // sidewalk / planting strip along the road edge
+    o += poly(roadPts(36).slice(2).concat(roadPts(32).slice(2).reverse()), 'fill="var(--asphaltLine)" opacity="0.6"');
+    // Mather Blvd at the south-west
+    o += rect(-110, 170, 400, 10, 'fill="var(--road)"'); o += text(60, 177.5, 'MATHER BLVD', 'fill="var(--ink)" font-size="6" text-anchor="middle"');
+    // parking lot
+    o += rect(-4, 94, 250, 70, 'fill="var(--asphalt)" rx="2"');
+    o += rect(60, 160, 24, 14, 'fill="var(--asphalt)"'); // driveway to Mather
+    let stalls = 0;
+    for (let i = 0; i < 24; i++) { o += rect(2 + i * 9, 100, 9, 18, 'fill="none" stroke="var(--asphaltLine)" stroke-width="0.6"'); stalls++; }
+    for (let i = 0; i < 24; i++) { o += rect(2 + i * 9, 142, 9, 18, 'fill="none" stroke="var(--asphaltLine)" stroke-width="0.6"'); stalls++; }
+    for (let i = 0; i < 7; i++) { o += rect(222, 100 + i * 9, 18, 9, 'fill="none" stroke="var(--asphaltLine)" stroke-width="0.6"'); stalls++; }
+    o += text(110, 132, `PARKING · ${stalls} SPACES · 9 × 18 FT STALLS, 24 FT AISLE (SCHEMATIC)`, 'fill="var(--ink)" font-size="4.2" text-anchor="middle"');
+    // building
+    o += poly(BLDG, 'fill="var(--bldg)" stroke="var(--wall)" stroke-width="1.2" stroke-linejoin="miter"');
+    o += `<path d="${SUITE}" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.1"/>`;
+    // glass runs (road side of the suite, west wall, north top, demising glass)
+    const g = 'stroke="var(--glass)" stroke-width="1.6"';
+    o += line(2.5, 37.1, 49.5, 7.1, g); o += line(3, 52, 3, 70, g); o += line(58, 7.5, 78, 7.5, g); o += line(134.5, -37.9, 186.5, -80.9, g); o += line(8.5, 33, 41.5, 12, 'stroke="var(--glass)" stroke-width="0"');
+    // suite doors
+    const door = (x1, y1, x2, y2) => line(x1, y1, x2, y2, 'stroke="var(--amber)" stroke-width="2.2"');
+    o += door(5, 71.3, 5, 76.7); o += door(68.5, 82.5, 71.5, 82.5); o += door(74.3, 9, 77.4, 9);
+    o += text(-14, 76, 'front door', 'fill="var(--ink)" font-size="3.8" text-anchor="end"') + text(-14, 80.5, 'glass double door', 'fill="var(--muted)" font-size="3" text-anchor="end"');
+    o += text(70, 92, 'office entry / stage door', 'fill="var(--ink)" font-size="3.4" text-anchor="middle"');
+    o += text(76, 4, 'rear exit', 'fill="var(--ink)" font-size="3.4" text-anchor="middle"');
+    // labels
+    o += text(45, 50, 'CHURCH SUITE', 'fill="var(--ink)" font-size="6" font-weight="700" text-anchor="middle" font-family="Archivo, Arial, sans-serif"') + text(45, 57, '±5,685 SF', labS);
+    o += text(140, 48, 'LEASED', 'fill="var(--muted)" font-size="6" text-anchor="middle" font-family="Archivo, Arial, sans-serif"') + text(140, 55, '±14,810 SF · lease ends 12/2028', labS);
+    o += text(172, -30, 'LEASED', 'fill="var(--muted)" font-size="6" text-anchor="middle" font-family="Archivo, Arial, sans-serif"');
+    // dimensions
+    const dim = (x1, y1, x2, y2, t, tx, ty, rot) => line(x1, y1, x2, y2, 'stroke="var(--muted)" stroke-width="0.5"') + `<text x="${fmt(tx)}" y="${fmt(ty)}" ${labS}${rot ? ` transform="rotate(${rot} ${fmt(tx)} ${fmt(ty)})"` : ''}>${t}</text>`;
+    o += dim(2.5, 92, 219.5, 92, "≈ 217'", 111, 90.5);
+    o += dim(226, -80.9, 226, 86.1, "≈ 167'", 230, 4, 90);
+    // north arrow (approximate: plan east is roughly north-east on the ground)
+    o += `<g transform="translate(-85 -120) rotate(45)"><line x1="0" y1="14" x2="0" y2="-14" stroke="var(--ink)" stroke-width="1"/><polygon points="0,-18 -4,-8 4,-8" fill="var(--ink)"/><text x="0" y="-21" fill="var(--ink)" font-size="6" text-anchor="middle" font-weight="700">N</text></g>`;
+    o += text(-85, -98, 'approx.', 'fill="var(--muted)" font-size="3.4" text-anchor="middle"');
+    // trees along the road (schematic)
+    for (let t = -40; t <= 200; t += 36) { const p = [c0[0] + D[0] * t + N[0] * 48, c0[1] + D[1] * t + N[1] * 48]; o += `<circle cx="${fmt(p[0])}" cy="${fmt(p[1])}" r="7" fill="#9DBB85" opacity="0.8"/>`; }
+    o += `<circle cx="-30" cy="60" r="12" fill="#86A86E" opacity="0.85"/><circle cx="-18" cy="40" r="9" fill="#86A86E" opacity="0.85"/>`;
+    o += text(-60, 140, 'lawn', 'fill="var(--muted)" font-size="4" text-anchor="middle"');
+    o += '</svg>';
+    return o;
+  }
+
+  function elev() {
+    // two elevations side by side: west (front door) and road side of the suite
+    let o = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 136" role="img" font-family="IBM Plex Mono, Menlo, monospace">`;
+    o += `<defs><pattern id="brick" patternUnits="userSpaceOnUse" width="4" height="2"><rect width="4" height="2" fill="var(--brick)"/><path d="M0 1 H4 M2 0 V1 M0 1 V2 M4 1 V2" stroke="var(--brickDark)" stroke-width="0.15" opacity="0.5"/></pattern></defs>`;
+    const ground = (x, w) => line(x - 4, 50, x + w + 4, 50, 'stroke="var(--ink)" stroke-width="0.6"');
+    // West elevation: wall y=39..86 -> 47 ft, viewer looks east, so plan-south (y=86) is on the LEFT
+    const W1 = 47, x1 = 36, s = 1.0, h = 18;
+    o += rect(x1, 50 - h * s, W1 * s, h * s, 'fill="url(#brick)" stroke="var(--ink)" stroke-width="0.4"');
+    o += rect(x1, 50 - h * s - 1, W1 * s, 1.2, 'fill="var(--wall)"');
+    // door at y=71.3..76.7 -> from left edge: 86-76.7 = 9.3 .. 14.7
+    o += rect(x1 + 9.3, 50 - 8, 5.4, 8, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.3"'); o += line(x1 + 12, 50 - 8, x1 + 12, 50, 'stroke="var(--ink)" stroke-width="0.3"');
+    o += rect(x1 + 7.5, 50 - 9.6, 9, 0.8, 'fill="var(--wall)"'); // canopy
+    // glass band y=52..70 -> from left: 16..34, sill 3 ft, head 9 ft
+    o += rect(x1 + 16, 50 - 9, 18, 6, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.3"'); for (let k = 1; k < 5; k++) o += line(x1 + 16 + k * 3.6, 41, x1 + 16 + k * 3.6, 47, 'stroke="var(--ink)" stroke-width="0.25"');
+    o += ground(x1, W1);
+    o += text(x1 + W1 / 2, 57, 'WEST ELEVATION · front door side · 47 ft', 'fill="var(--ink)" font-size="3.2" text-anchor="middle"');
+    o += text(x1 + W1 / 2, 61.5, 'brick, parapet ≈18 ft, canopy over the glass double door, ribbon window to the right', 'fill="var(--muted)" font-size="2.3" text-anchor="middle"');
+    o += line(x1 - 3, 50, x1 - 3, 32, 'stroke="var(--muted)" stroke-width="0.3"') + text(x1 - 4.2, 41.5, "18'", 'fill="var(--muted)" font-size="2.4" text-anchor="end"');
+    // Road-side elevation of the suite: diagonal facade 56 ft (from (2.5,37) to (49.5,7)) then the flat 9-ft wall segment to x=81 (31.5 ft)
+    const x2 = 36, L1 = 56, L2 = 31.5;
+    o += '<g transform="translate(0 66)">';
+    o += rect(x2, 50 - h, L1 + L2, h, 'fill="url(#brick)" stroke="var(--ink)" stroke-width="0.4"');
+    o += rect(x2, 50 - h - 1, L1 + L2, 1.2, 'fill="var(--wall)"');
+    // windows along the diagonal: three office windows + nursery/office wedge, floor-to-ceiling 1..9 ft
+    [[2, 8], [14, 10], [26, 12], [40, 12]].forEach(([a, w]) => { o += rect(x2 + a, 50 - 9, w, 8, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.3"'); for (let k = 1; k < w / 3; k++) o += line(x2 + a + k * 3, 41, x2 + a + k * 3, 49, 'stroke="var(--ink)" stroke-width="0.25"'); });
+    o += line(x2 + L1, 50 - h, x2 + L1, 50, 'stroke="var(--ink)" stroke-width="0.5" stroke-dasharray="1 1"');
+    o += rect(x2 + L1 + 8.5, 50 - 9, 20, 8, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.3"'); for (let k = 1; k < 6; k++) o += line(x2 + L1 + 8.5 + k * 3.3, 41, x2 + L1 + 8.5 + k * 3.3, 49, 'stroke="var(--ink)" stroke-width="0.25"');
+    o += rect(x2 + L1 + 24.8, 50 - 7, 3.1, 7, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.3"');
+    o += ground(x2, L1 + L2);
+    o += text(x2 + (L1 + L2) / 2, 57, 'ROAD SIDE · suite portion · 56 ft angled wall + 31 ft to the rear door', 'fill="var(--ink)" font-size="3.2" text-anchor="middle"');
+    o += text(x2 + (L1 + L2) / 2, 61.5, 'floor-to-ceiling glass at the three offices and the north end; rear exit door at right', 'fill="var(--muted)" font-size="2.3" text-anchor="middle"');
+    o += '</g></svg>';
+    return o;
+  }
+
+  function concept() {
+    let o = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 92" role="img" font-family="IBM Plex Mono, Menlo, monospace">`;
+    o += `<defs><pattern id="brick2" patternUnits="userSpaceOnUse" width="4" height="2"><rect width="4" height="2" fill="var(--brick)"/><path d="M0 1 H4 M2 0 V1 M0 1 V2 M4 1 V2" stroke="var(--brickDark)" stroke-width="0.15" opacity="0.5"/></pattern></defs>`;
+    const G = 80, h = 18, x1 = 30, W1 = 47;
+    // existing brick wall behind
+    o += rect(x1, G - h, W1, h, 'fill="url(#brick2)" stroke="var(--ink)" stroke-width="0.4"'); o += rect(x1, G - h - 1, W1, 1.2, 'fill="var(--wall)"');
+    o += rect(x1 + 16, G - 9, 18, 6, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.3"');
+    // white gabled entry centered on the door (door center at x1+12), 24 ft wide, eave 14 ft, ridge 22 ft
+    const cx = x1 + 12, gw = 24, eave = 14, ridge = 22;
+    o += rect(cx - gw / 2, G - eave, gw, eave, 'fill="var(--white)" stroke="var(--ink)" stroke-width="0.4"');
+    o += `<polygon points="${fmt(cx - gw / 2 - 1)},${fmt(G - eave)} ${fmt(cx)},${fmt(G - ridge)} ${fmt(cx + gw / 2 + 1)},${fmt(G - eave)}" fill="var(--white)" stroke="var(--ink)" stroke-width="0.4"/>`;
+    for (let k = 0; k < 12; k++) o += line(cx - gw / 2, G - eave + 1.1 * k + 0.5, cx + gw / 2, G - eave + 1.1 * k + 0.5, 'stroke="var(--rule)" stroke-width="0.15"');
+    // door with transom
+    o += rect(cx - 3, G - 8, 6, 8, 'fill="var(--steeple)"'); o += line(cx, G - 8, cx, G, 'stroke="var(--white)" stroke-width="0.3"'); o += rect(cx - 3, G - 9.6, 6, 1.3, 'fill="var(--glassSoft)"');
+    // side windows
+    o += rect(cx - 10, G - 9, 4.5, 6, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.25"'); o += rect(cx + 5.5, G - 9, 4.5, 6, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.25"');
+    // tower 10 ft wide from the ridge up: base 22..36, belfry 36..44, spire to 55
+    o += rect(cx - 5, G - 36, 10, 14, 'fill="var(--white)" stroke="var(--ink)" stroke-width="0.4"');
+    o += rect(cx - 5, G - 36.6, 10, 0.8, 'fill="var(--steeple)"');
+    o += rect(cx - 4, G - 44, 8, 8, 'fill="var(--white)" stroke="var(--ink)" stroke-width="0.4"'); o += rect(cx - 2.2, G - 42.5, 4.4, 5.5, 'fill="var(--steeple)"'); for (let k = 1; k < 5; k++) o += line(cx - 2.2, G - 42.5 + k * 1.1, cx + 2.2, G - 42.5 + k * 1.1, 'stroke="var(--white)" stroke-width="0.2"');
+    o += `<polygon points="${fmt(cx - 4.6)},${fmt(G - 44)} ${fmt(cx)},${fmt(G - 55)} ${fmt(cx + 4.6)},${fmt(G - 44)}" fill="var(--steeple)" stroke="var(--ink)" stroke-width="0.3"/>`;
+    o += line(cx, G - 55, cx, G - 58, 'stroke="var(--ink)" stroke-width="0.5"');
+    o += rect(cx - 1.5, G - 32, 3, 5, 'fill="var(--glassSoft)" stroke="var(--ink)" stroke-width="0.25"');
+    // ground, people scale, fence
+    o += line(0, G, 160, G, 'stroke="var(--ink)" stroke-width="0.6"');
+    for (let x = 4; x < 156; x += 4) o += line(x, G + 3, x, G + 6, 'stroke="var(--ink)" stroke-width="0.35"'); o += line(2, G + 3.3, 158, G + 3.3, 'stroke="var(--ink)" stroke-width="0.35"');
+    o += `<g fill="var(--muted)"><circle cx="100" cy="${G - 5.2}" r="0.9"/><rect x="99.2" y="${G - 4.2}" width="1.6" height="4.2" rx="0.5"/></g>`;
+    o += text(102.5, G - 1, "5'10\"", 'fill="var(--muted)" font-size="2" text-anchor="start"');
+    // dimension lines
+    o += line(x1 - 5, G, x1 - 5, G - 18, 'stroke="var(--muted)" stroke-width="0.3"') + text(x1 - 6, G - 8, "18'", 'fill="var(--muted)" font-size="2.4" text-anchor="end"');
+    o += line(cx + 14, G, cx + 14, G - 55, 'stroke="var(--muted)" stroke-width="0.3"') + text(cx + 15.5, G - 27, "≈55' to the spire", 'fill="var(--muted)" font-size="2.4" text-anchor="start"');
+    o += line(cx - gw / 2, G + 9, cx + gw / 2, G + 9, 'stroke="var(--muted)" stroke-width="0.3"') + text(cx, G + 8, "24' gable", 'fill="var(--muted)" font-size="2.4" text-anchor="middle"');
+    o += text(80, 11, 'CONCEPT · west elevation with the gabled entry and steeple', 'fill="var(--ink)" font-size="3.2" text-anchor="middle"');
+    o += text(80, 15.5, 'white siding over the entry only; existing brick and parapet kept either side; fence and lawn along the road', 'fill="var(--muted)" font-size="2.3" text-anchor="middle"');
+    o += '</svg>';
+    return o;
+  }
+  document.getElementById('site').innerHTML = site();
+  document.getElementById('elev').innerHTML = elev();
+  document.getElementById('concept').innerHTML = concept();
+})();
+</script>
+
+</body>
+</html>

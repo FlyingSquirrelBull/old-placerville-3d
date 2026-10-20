@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 </head>
 <body style="margin:0">
@@ -162,14 +162,15 @@
         <tbody>
           <tr><td>Nursery (north strip, 2 new walls, door off the family alcove; no teaching area)</td><td>19.5 × 16</td><td class="num">312</td><td class="num">≈9 infants</td></tr>
           <tr><td>Family alcove: women's door, nursery door, rear exit</td><td>12 × 16</td><td class="num">192</td><td class="num"></td></tr>
-          <tr><td>Classroom 1 (existing 14 × 19 room, window into hall), 5 × 5 teaching area, no aisle</td><td>14 × 19</td><td class="num">265</td><td class="num" id="seatsC1">—</td></tr>
+          <tr><td>Classroom 1 (existing 14 × 19 room, window into hall, corner cut at 45° toward the lobby), 5 × 5 teaching area, no aisle</td><td>14 × 19</td><td class="num">265</td><td class="num" id="seatsC1">—</td></tr>
           <tr><td>Classroom 2 (3 offices, remove 2 partitions), 5 × 5 teaching area</td><td>34 × 10.5</td><td class="num">357</td><td class="num" id="seatsC2">—</td></tr>
           <tr><td>Classroom 3, adult class (south recess, 1 new wall, reached from the lobby), 5 × 5 teaching area, 21 × 23 in chairs at 36 in rows</td><td>36 × 12</td><td class="num">432</td><td class="num" id="seatsC3">—</td></tr>
           <tr><td>Lobby / foyer at the main entry</td><td>14.5 × 16</td><td class="num">232</td><td class="num"></td></tr>
           <tr><td>Hallway, lobby to the back corner of the hall (1 new wall)</td><td>7 × 25</td><td class="num">176</td><td class="num"></td></tr>
           <tr><td>Passage from lobby to Classroom 3 (existing heavy-walled room)</td><td>12.6 × 8</td><td class="num">102</td><td class="num"></td></tr>
           <tr><td>Restrooms (existing block; women's north, men's south)</td><td>19 × 20</td><td class="num">380</td><td class="num"></td></tr>
-          <tr><td>Pastor's office, the corner behind the platform backdrop, entered from the vestibule</td><td>irregular</td><td class="num">≈125</td><td class="num"></td></tr>
+          <tr><td>Pastor's office, the back corner at the top of the hallway (1 new wall and door)</td><td>irregular</td><td class="num">≈160</td><td class="num"></td></tr>
+          <tr><td>Storage / office space, the corner behind the platform backdrop, entered from the vestibule</td><td>irregular</td><td class="num">≈125</td><td class="num"></td></tr>
           <tr><td>Entry vestibule on the parking side (existing), now the office entry and stage door</td><td>14 × 14</td><td class="num">196</td><td class="num"></td></tr>
         </tbody>
       </table>
@@ -177,7 +178,7 @@
     <div>
       <h3 style="font-family:var(--display);font-size:17px;margin:4px 0 8px">How each option behaves</h3>
       <ul style="margin-top:0">
-        <li><strong>B, corner platform.</strong> The hallway and back aisle wrap the back of the room, the entry and both restroom doors are behind the congregation, and the parking vestibule is the stage door. Fan seating uses the irregular floor well. A solid backdrop runs along the back of the platform and up its restroom-side end, with a 3 ft opening at the hallway end; the baby grand sits at the restroom-side end (house left); the corner behind the backdrop is the pastor's office, about 125 SF, entered from the parking-lot vestibule. Trade-off: a diagonal platform is less conventional to build and the sound/projection wall is a corner.</li>
+        <li><strong>B, corner platform.</strong> The hallway and back aisle wrap the back of the room, the entry and both restroom doors are behind the congregation, and the parking vestibule is the stage door. Fan seating uses the irregular floor well. A solid backdrop runs along the back of the platform and up its restroom-side end, with a 3 ft opening at the hallway end; the baby grand sits at the restroom-side end (house left); the corner behind the backdrop is storage or office space, about 125 SF, entered from the parking-lot vestibule; the pastor's office is the back corner at the top of the hallway, about 160 SF, with its door onto the back aisle. Classroom 1's corner at the lobby is cut at 45° so the turn into the hallway is open. Trade-off: a diagonal platform is less conventional to build and the sound/projection wall is a corner.</li>
         <li><strong>C, platform on the south.</strong> Straight rows and a straight platform in front of the Classroom 3 wall. The hallway still delivers people to the back-left corner and the restrooms are back-right, so the circulation rule holds. Trade-off: the office-row diagonal clips the back-left rows, the platform is only 10 ft deep unless Classroom 3 gives up the recess, and the parking vestibule lands beside the platform's right end (fine as a stage door, bad if people use it to come in).</li>
         <li><strong>D, platform on the west.</strong> Straight rows facing the hallway wall, restrooms on the back wall, and the hallway doubles as backstage for musicians. The problem is the front door: the hallway's north end opens beside the platform, so everyone walks in at the front-left. It also seats the fewest. Shown because you asked; not recommended unless the entry moves.</li>
       </ul>
@@ -267,7 +268,8 @@
     // office doors (swing into the office = local +y)
     [[32.8, -1], [22.7, -1], [19.0, -1]].forEach(([s, sw]) => { const h = Q(s); o += door(h[0], h[1], WALL_ANGLE, sw); });
     // 14x19 room
-    o += rect(5.7, 46.7, 13.8, 19.2, innerAttr);
+    if (mode === 'proposed') { o += poly([[5.7, 46.7], [19.5, 46.7], [19.5, 61.9], [15.5, 65.9], [5.7, 65.9]], innerAttr); o += line(19.5, 61.9, 15.5, 65.9, 'stroke="var(--accent)" stroke-width="0.45" stroke-dasharray="1.1 0.6"'); }
+    else o += rect(5.7, 46.7, 13.8, 19.2, innerAttr);
     o += door(16, 46.7, 0, -1);
     o += line(19.5, 55, 19.5, 61, 'stroke="var(--glass)" stroke-width="0.55"');
     // 12.6x8 room (heavy walls on the plan)
@@ -343,7 +345,8 @@
   const inPoly = (pt, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > pt[1]) !== (b[1] > pt[1]) && pt[0] < (b[0] - a[0]) * (pt[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
   const area = (poly) => Math.abs(poly.reduce((acc, p, i) => { const q = poly[(i + 1) % poly.length]; return acc + p[0] * q[1] - q[0] * p[1]; }, 0)) / 2;
   const Nn = [0.561, 0.828];
-  const HALL = [Q(10.6), [49.5, 25], [75, 25], [75, 45], [81, 45], [81, 63], [86, 63], [86, 69.4], [68.2, 69.4], [68.2, 68], [32, 68], [32, 71.9], [26.5, 71.9], [26.5, 46.7], [5.7, 46.7], [5, 46.5], [3, 39], S(44.5), Q(44.5)];
+  const HALL = [Q(10.6), [49.5, 25], [75, 25], [75, 45], [81, 45], [81, 63], [86, 63], [86, 69.4], [68.2, 69.4], [68.2, 68], [32, 68], [32, 71.9], [26.5, 71.9], [26.5, 46.7], [19.5, 46.7], Q(44.5)];
+  const OFFICE = [[3, 39], S(44.5), Q(44.5), [19.5, 46.7], [5.7, 46.7], [5, 46.5]];
   const FACEBAND = [Q(10.6), Q(44.5), [Q(44.5)[0] + 7 * Nn[0], Q(44.5)[1] + 7 * Nn[1]], [Q(10.6)[0] + 7 * Nn[0], Q(10.6)[1] + 7 * Nn[1]]];
   const COLS = [[57, 40], [40, 58]];
   const CW = 1.75, CD = 1.92, PITCH = 3; // 21 x 23 in church chairs in the hall
@@ -443,8 +446,13 @@
     o += poly([P(-hl - 1.6, -1.2), P(-hl - 0.5, -1.2), P(-hl - 0.5, 1.2), P(-hl - 1.6, 1.2)], 'fill="var(--muted)" stroke="none"');
     const lp = P(0, hw + 1.5);
     o += `<text x="${fmt(lp[0])}" y="${fmt(lp[1])}" fill="var(--ink)" font-size="1.1" text-anchor="middle" transform="rotate(-34 ${fmt(lp[0])} ${fmt(lp[1])})">baby grand 5'5" × 4'10"</text>`;
-    o += text(76.5, 64.2, "Pastor's office", 'fill="var(--ink)" font-size="1.45" text-anchor="middle"') + text(76.5, 65.9, '≈125 SF · behind the backdrop', labS) + text(76.5, 67.5, 'door to platform at the hallway end', 'fill="var(--accent)" font-size="1.05" text-anchor="middle"');
-    if (!chart) o += text(75.1, 72.9, 'Vestibule', labS) + text(75.1, 79.6, 'office entry / exit', labS);
+    o += text(76.5, 64.2, 'Storage / office', 'fill="var(--ink)" font-size="1.45" text-anchor="middle"') + text(76.5, 65.9, '≈125 SF · behind the backdrop', labS) + text(76.5, 67.5, 'door to platform at the hallway end', 'fill="var(--accent)" font-size="1.05" text-anchor="middle"');
+    if (!chart) o += text(75.1, 72.9, 'Vestibule', labS) + text(75.1, 79.6, 'storage entry / exit', labS);
+    // pastor's office in the back corner, door onto the back aisle at the top of the hallway
+    o += poly(OFFICE, 'fill="var(--accent-soft)" stroke="none" opacity="0.7"');
+    o += line(18.55, 41.16, 19.5, 46.7, newWall);
+    o += door(18.75, 42.3, 80.3, -1);
+    o += text(10.8, 40.6, "Pastor's office", 'fill="var(--ink)" font-size="1.45" text-anchor="middle"') + text(10.8, 42.4, '≈160 SF · new wall + door', 'fill="var(--accent)" font-size="1.05" text-anchor="middle"');
     return o;
   }
   function proposedOpt(opt) {
@@ -478,14 +486,14 @@
     o += door(26.5, 56, 90, -1);
     o += `<text x="23" y="60" fill="var(--ink)" font-size="1.7" text-anchor="middle" transform="rotate(-90 23 60)">Hallway 7' wide</text>`;
     o += `<text x="24.9" y="60" fill="var(--accent)" font-size="1.2" text-anchor="middle" transform="rotate(-90 24.9 60)">${opt === 'D' ? 'doubles as backstage' : 'lobby → back of hall'}</text>`;
-    o += text(14, 43.6, opt === 'D' ? 'front-left corner' : 'back corner', labS);
+    if (opt !== 'B') o += text(14, 43.6, opt === 'D' ? 'front-left corner' : 'back corner', labS);
     o += rect(32, 68, 36.2, 12, newFill);
     o += line(32, 68, 68.2, 68, newWall);
     o += line(31.8, 71.9, 31.8, 80, removeWall);
     o += door(19.2, 74, 90, 1);
     const CF = classroomFills(); o += CF.svg + classroomLabels(CF, true);
     o += text(25.5, 75.3, 'passage', labS) + text(25.5, 77.3, "12.6' × 8'", labS) + text(25.5, 79.1, 'open east wall', 'fill="var(--accent)" font-size="1.1" text-anchor="middle"');
-    o += text(12, 69.5, 'Lobby', lab) + text(12, 71.4, "14.5' × 16'", labS);
+    o += text(12, 69.5, 'Lobby', lab) + text(12, 71.4, "14.5' × 16'", labS) + text(17.6, 66.2, '45°', 'fill="var(--accent)" font-size="1" text-anchor="middle"');
     o += text(12, 79.6, 'MAIN ENTRY', 'fill="var(--ink)" font-size="1.4" text-anchor="middle" font-weight="600"');
     o += text(12, 81.2, 'glass double door', 'fill="var(--muted)" font-size="1.1" text-anchor="middle"');
     o += text(23, 69.6, '↑ hallway', 'fill="var(--muted)" font-size="1.2" text-anchor="middle"');

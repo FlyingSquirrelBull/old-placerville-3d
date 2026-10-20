@@ -63,7 +63,8 @@
   const Q = (s) => { const p = S(s); return [p[0] + 5.9, p[1] + 8.7]; };
   const Nn = [0.561, 0.828];
   const OUTLINE = [[49.5, 7.5], [58, 7.5], [58, 9], [81, 9], [81, 25], [94, 25], [94, 45], [81, 45], [81, 63], [86, 63], [86, 80], [82, 80], [82, 82.5], [66.5, 82.5], [66.5, 80], [19.5, 80], [19.5, 82.5], [3, 82.5], [3, 79], [5, 79], [5, 46.5], [3, 46.5], [3, 39]];
-  const HALL = [Q(10.6), [49.5, 25], [75, 25], [75, 45], [81, 45], [81, 63], [86, 63], [86, 69.4], [68.2, 69.4], [68.2, 68], [32, 68], [32, 71.9], [26.5, 71.9], [26.5, 46.7], [5.7, 46.7], [5, 46.5], [3, 39], S(44.5), Q(44.5)];
+  const HALL = [Q(10.6), [49.5, 25], [75, 25], [75, 45], [81, 45], [81, 63], [86, 63], [86, 69.4], [68.2, 69.4], [68.2, 68], [32, 68], [32, 71.9], [26.5, 71.9], [26.5, 46.7], [19.5, 46.7], Q(44.5)];
+  const OFFICE = [[3, 39], S(44.5), Q(44.5), [19.5, 46.7], [5.7, 46.7], [5, 46.5]];
   const FACEBAND = [Q(10.6), Q(44.5), [Q(44.5)[0] + 7 * Nn[0], Q(44.5)[1] + 7 * Nn[1]], [Q(10.6)[0] + 7 * Nn[0], Q(10.6)[1] + 7 * Nn[1]]];
   const COLS = [[57, 40], [40, 58]];
   const CW = 1.75, CD = 1.92, PITCH = 3;
@@ -156,7 +157,8 @@
   const g = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), M.ground); g.rotation.x = -Math.PI / 2; g.position.y = -0.05; g.receiveShadow = true; scene.add(g);
   flat(OUTLINE, M.floor, 0);
   flat(HALL, M.hall, 0.02);
-  flat(rectPts(5.7, 46.7, 19.5, 65.9), M.room, 0.03);
+  flat([[5.7, 46.7], [19.5, 46.7], [19.5, 61.9], [15.5, 65.9], [5.7, 65.9]], M.room, 0.03);
+  flat(OFFICE, M.newroom, 0.03);
   flat(rectPts(19.2, 71.9, 31.8, 80), M.room, 0.03);
   flat(rectPts(75, 25, 94, 45), M.room, 0.03);
   flat(rectPts(68.2, 69.4, 82.1, 82.5), M.room, 0.03);
@@ -187,7 +189,7 @@
   const inn = (a, b, gaps) => wall(a[0], a[1], b[0], b[1], HI, 0.45, M.wall, gaps);
   inn(Q(10.6), Q(44.5), [[8.4, 11.4], [12.1, 15.1], [22.2, 25.2]]);
   inn(S(10.6), Q(10.6)); inn(S(44.5), Q(44.5));
-  inn([5.7, 46.7], [19.5, 46.7], [[10.3, 13.3]]); inn([19.5, 46.7], [19.5, 65.9]); inn([19.5, 65.9], [5.7, 65.9]);
+  inn([5.7, 46.7], [19.5, 46.7], [[10.3, 13.3]]); inn([19.5, 46.7], [19.5, 61.9]); inn([15.5, 65.9], [5.7, 65.9]);
   { const m = new THREE.Mesh(new THREE.BoxGeometry(0.3, 6, 6.5), M.glass); m.position.set(19.5, 4, 58); scene.add(m); }
   inn([19.2, 71.9], [31.8, 71.9], [[8.8, 11.8]]); inn([19.2, 71.9], [19.2, 80], [[2.1, 5.1]]);
   inn([75, 25], [81, 25], [[1, 4]]); inn([75, 25], [75, 45], [[12.5, 15.5]]); inn([75, 35.5], [94, 35.5]); inn([75, 45], [81, 45]);
@@ -197,6 +199,8 @@
   nw([49.5, 25], [69, 25]); nw([69, 9], [69, 25], [[9, 12]]);
   nw([26.5, 46.7], [26.5, 71.9], [[9.3, 12.3]]);
   nw([32, 68], [68.2, 68]);
+  nw([19.5, 61.9], [15.5, 65.9]);
+  nw([18.55, 41.16], [19.5, 46.7], [[1.2, 4.2]]);
   nw([68.7, 66.3], [81, 58]); nw([75, 51.1], [75, 61]);
   { const g2 = new THREE.Group(); const body = new THREE.Mesh(new THREE.BoxGeometry(5.4, 1.0, 4.9), new THREE.MeshLambertMaterial({ color: 0x15181c })); body.position.y = 2.6; g2.add(body);
     const lid = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.12, 4.2), new THREE.MeshLambertMaterial({ color: 0x23272c })); lid.position.set(0.4, 3.3, 0); lid.rotation.z = 0.55; g2.add(lid);
@@ -226,7 +230,7 @@
   function label(txt, x, z, y, scale) { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128; const cx = cv.getContext('2d'); cx.fillStyle = 'rgba(15,20,25,0.72)'; cx.fillRect(0, 0, 512, 128); cx.font = '600 54px Archivo, Arial, sans-serif'; cx.fillStyle = '#F3F6F8'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(txt, 256, 64);
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false })); sp.position.set(x, y || 11, z); const s = scale || 1; sp.scale.set(14 * s, 3.5 * s, 1); scene.add(sp); return sp; }
   label('PLATFORM', 64, 61, 6); label('NURSERY', 59, 16); label('CLASSROOM 1', 12.6, 56); label('CLASSROOM 2', 29, 29); label('CLASSROOM 3', 50, 74); label('LOBBY', 12, 73); label('HALLWAY', 23, 59, 10, 0.7);
-  label("WOMEN'S", 84.5, 30, 10, 0.8); label("MEN'S", 84.5, 40.5, 10, 0.8); label('FAMILY ALCOVE', 75, 15, 10, 0.75); label('MAIN ENTRY', 4, 74, 7, 0.8); label("PASTOR'S OFFICE", 76.5, 65, 10, 0.75); label('OFFICE ENTRY', 75, 76, 10, 0.75); label('PIANO', 71, 59, 7, 0.6);
+  label("WOMEN'S", 84.5, 30, 10, 0.8); label("MEN'S", 84.5, 40.5, 10, 0.8); label('FAMILY ALCOVE', 75, 15, 10, 0.75); label('MAIN ENTRY', 4, 74, 7, 0.8); label('STORAGE / OFFICE', 76.5, 65, 10, 0.7); label('STORAGE ENTRY', 75, 76, 10, 0.7); label("PASTOR'S OFFICE", 11, 41, 10, 0.75); label('PIANO', 71, 59, 7, 0.6);
 
   document.getElementById('count').textContent = `${hallSeats.length} chairs + ${wc.length} wheelchair spaces in the hall · ${classSeats} classroom seats`;
 

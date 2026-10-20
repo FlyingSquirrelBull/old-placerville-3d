@@ -1,3 +1,6 @@
-# 10360 Old Placerville Rd, option B in 3D
+# 10360 Old Placerville Rd, church layout study
 
-Interactive 3D model of a proposed church layout for the available suite at 10360 Old Placerville Rd, Sacramento. Built with three.js. Published with GitHub Pages.
+- index.html: interior 3D model (option B)
+- plans.html: floor plans and seating chart
+- exterior.html: site plan, elevations, entry concept
+- exterior-3d.html: outside 3D model with the steeple concept toggle
