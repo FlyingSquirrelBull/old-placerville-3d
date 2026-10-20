@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 </head>
 <body style="margin:0">
@@ -294,9 +294,8 @@
     o += line(78, 7.5, 58, 7.5, 'stroke="var(--glass)" stroke-width="0.6"');
     o += line(3, 52, 3, 70, 'stroke="var(--glass)" stroke-width="0.6"');
     o += rect(80.2, 17.3, 0.8, 1.6, 'fill="var(--wall)"');
-    o += text(79.4, 18.9, 'FEC', 'fill="var(--muted)" font-size="1.1" text-anchor="end"');
     o += rect(80.2, 20.2, 0.8, 1.8, 'fill="none" stroke="var(--wall)" stroke-width="0.2"');
-    o += text(79.4, 21.7, 'DF', 'fill="var(--muted)" font-size="1.1" text-anchor="end"');
+    if (mode !== 'proposed') { o += text(79.4, 18.9, 'FEC', 'fill="var(--muted)" font-size="1.1" text-anchor="end"'); o += text(79.4, 21.7, 'DF', 'fill="var(--muted)" font-size="1.1" text-anchor="end"'); }
     // columns, approximate
     [[57, 40], [40, 58]].forEach(([x, y]) => {
       o += `<circle cx="${x}" cy="${y}" r="0.7" fill="var(--wall)"/>`;
@@ -460,8 +459,8 @@
     o += rect(69, 9, 12, 16, 'fill="var(--amber-soft)" stroke="none" opacity="0.55"');
     o += rect(69.3, 10, 2.6, 3, 'fill="var(--panel)" stroke="var(--wall)" stroke-width="0.2"') + rect(69.3, 13.3, 2.6, 3, 'fill="var(--panel)" stroke="var(--wall)" stroke-width="0.2"');
     o += rect(78.8, 17.5, 2.1, 6.5, 'fill="var(--panel)" stroke="var(--wall)" stroke-width="0.2"') + rect(79, 18.2, 1.7, 1.5, 'fill="var(--wall)"');
-    o += text(70.6, 17.8, 'fridge ×2', 'fill="var(--muted)" font-size="0.95" text-anchor="middle"') + text(78.2, 20.9, 'micro', 'fill="var(--muted)" font-size="0.85" text-anchor="end"') + text(78.2, 22, 'wave', 'fill="var(--muted)" font-size="0.85" text-anchor="end"');
-    o += text(75, 12.4, 'Kitchenette', 'fill="var(--ink)" font-size="1.35" text-anchor="middle"') + (chart ? '' : text(75, 14.1, "12' × 16' · 192 SF", labS) + text(75, 15.7, 'rear exit path kept clear', 'fill="var(--accent)" font-size="1" text-anchor="middle"'));
+    o += text(70.6, 17.6, 'fridges', 'fill="var(--muted)" font-size="0.9" text-anchor="middle"') + text(76.5, 24.3, 'microwave', 'fill="var(--muted)" font-size="0.8" text-anchor="middle"');
+    o += text(76, 11.4, 'Kitchenette', 'fill="var(--ink)" font-size="1.2" text-anchor="middle"') + (chart ? '' : text(76, 12.8, "12'×16' · 192 SF", 'fill="var(--muted)" font-size="0.95" text-anchor="middle"') + text(76, 14.1, 'exit path clear', 'fill="var(--accent)" font-size="0.9" text-anchor="middle"'));
     return o;
   }
   function proposedOpt(opt) {
@@ -481,7 +480,7 @@
     o += poly([[49.5, 7.5], [69, 7.5], [69, 21], [65, 25], [49.5, 25]], newFill);
     o += line(49.5, 25, 65, 25, newWall) + line(65, 25, 69, 21, newWall) + line(69, 21, 69, 9, newWall);
     o += door(68.08, 21.92, 135, -1);
-    o += text(59.2, 13.6, 'Nursery', lab) + text(59.2, 15.7, "19.5' × 16' · 310 SF", labS) + text(59.2, 17.6, '≈9 infants at 35 SF each', labS) + text(59.2, 19.5, 'new walls', 'fill="var(--accent)" font-size="1.3" text-anchor="middle"') + text(59.2, 21.2, '45° corner door onto the back aisle', 'fill="var(--accent)" font-size="1.3" text-anchor="middle"');
+    o += text(58.5, 13.6, 'Nursery', lab) + text(58.5, 15.7, "19.5' × 16' · 310 SF", labS) + text(58.5, 17.6, '≈9 infants at 35 SF each', labS) + text(58.5, 19.5, 'new walls', 'fill="var(--accent)" font-size="1.3" text-anchor="middle"') + text(58.5, 21.2, '45° corner door → back aisle', 'fill="var(--accent)" font-size="1.2" text-anchor="middle"');
     o = kitchenette(o, newWall, false);
     o += poly([[79, 25], [94, 25], [94, 45], [75, 45], [75, 29]], 'fill="var(--panel)" stroke="none"');
     o += poly([[79, 25], [94, 25], [94, 45], [75, 45], [75, 29]], innerAttr) + line(75, 35.5, 94, 35.5, innerAttr) + line(79, 25, 75, 29, newWall);
