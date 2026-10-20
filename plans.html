@@ -434,17 +434,17 @@
 
 
   const PIANO = { c: [71, 59], L: 5.4, W: 4.9 };
-  function platformExtras(o, newWall) {
+  function platformExtras(o, newWall, chart) {
     o += line(68.7, 66.3, 81, 58, newWall);
     o += line(75, 51.1, 75, 61, newWall);
     const d = [-0.828, 0.561], n = [0.561, 0.828], c = PIANO.c, hl = PIANO.L / 2, hw = PIANO.W / 2;
     const P = (a, b) => [c[0] + d[0] * a + n[0] * b, c[1] + d[1] * a + n[1] * b];
     o += poly([P(-hl, -hw), P(hl, -hw), P(hl, hw * 0.55), P(hl * 0.3, hw), P(-hl, hw)], 'fill="var(--ink)" stroke="var(--panel)" stroke-width="0.15"');
     o += poly([P(-hl - 1.6, -1.2), P(-hl - 0.5, -1.2), P(-hl - 0.5, 1.2), P(-hl - 1.6, 1.2)], 'fill="var(--muted)" stroke="none"');
-    const lp = P(0, -hw - 1.3);
+    const lp = P(0, hw + 1.5);
     o += `<text x="${fmt(lp[0])}" y="${fmt(lp[1])}" fill="var(--ink)" font-size="1.1" text-anchor="middle" transform="rotate(-34 ${fmt(lp[0])} ${fmt(lp[1])})">baby grand 5'5" × 4'10"</text>`;
     o += text(76.5, 64.2, "Pastor's office", 'fill="var(--ink)" font-size="1.45" text-anchor="middle"') + text(76.5, 65.9, '≈125 SF · behind the backdrop', labS) + text(76.5, 67.5, 'door to platform at the hallway end', 'fill="var(--accent)" font-size="1.05" text-anchor="middle"');
-    o += text(75.1, 72.9, 'Vestibule', labS) + text(75.1, 79.6, 'office entry / exit', labS);
+    if (!chart) o += text(75.1, 72.9, 'Vestibule', labS) + text(75.1, 79.6, 'office entry / exit', labS);
     return o;
   }
   function proposedOpt(opt) {
@@ -629,7 +629,7 @@
     o += poly(L.backstage, 'fill="var(--exist)" stroke="none"');
     o += line(66.2, 68, 81, 58, 'stroke="var(--amber)" stroke-width="0.25" stroke-dasharray="0.6 0.4"');
     o += `<text x="66.5" y="62" fill="var(--ink)" font-size="2.2" text-anchor="middle" transform="rotate(-34 66.5 62)"><tspan x="66.5" dy="-0.3">PLATFORM</tspan><tspan x="66.5" dy="2" font-size="1.3" fill="var(--muted)">30' × 9'</tspan></text>`;
-    o = platformExtras(o, newWall);
+    o = platformExtras(o, newWall, true);
     // aisle bands
     const hatch = 'fill="url(#hatch)" stroke="var(--accent)" stroke-width="0.12"';
     const lp = (pts) => poly(pts.map(p => F.toW(p[0], p[1])), hatch);
@@ -663,7 +663,7 @@
     // exits
     const ex = (x, y, t, rot) => `<text x="${x}" y="${y}" fill="var(--ink)" font-size="1.25" font-weight="600" text-anchor="middle" ${rot ? `transform="rotate(${rot} ${x} ${y})"` : ''}>${t}</text>`;
     o += ex(12, 77.5, 'EXIT 1');
-    o += ex(75.1, 72.9, 'EXIT 2 · stage door');
+    o += ex(75.1, 72.9, 'EXIT 2 · office entry');
     o += ex(75.5, 11.5, 'EXIT 3 · rear door');
     o += text(37, 43.5, 'col', 'fill="var(--muted)" font-size="1" text-anchor="middle"');
     const seatedTotal = chairs.length - wc.length;
