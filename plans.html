@@ -111,7 +111,7 @@
   <div class="legend"><span class="l-exist">existing enclosed room</span><span class="l-glass">glass wall / window</span><span>door swing shown as arc</span><span>dashed = demising wall to leased space</span></div>
 
   <h2>Version A3 <span class="tag">corner platform, parking-lot corner</span></h2>
-  <p>Lobby inside the left front door, 7 ft hallway up Classroom 1's wall to the back corner, 7 ft back aisle along the office row and a 5 ft walkway below the nursery, a kitchen behind a 45° double door that doubles as the rear exit route, a 4 ft restroom hall with the men's door off it and the women's at its end, three classrooms, a 40 ft corner platform running to the east wall with the pastor's office behind the backdrop.</p>
+  <p>Lobby inside the left front door, 7 ft hallway up Classroom 1's wall to the back corner, 7 ft back aisle along the office row and a 5 ft walkway below the nursery, a kitchen behind a corner-to-corner double door that doubles as the rear exit route, a 4 ft restroom hall with the men's door off it and the women's at its end, three classrooms, a 40 ft corner platform running to the east wall with the pastor's office behind the backdrop.</p>
   <div class="plan" id="proposedB"></div>
   <div class="legend"><span class="l-exist">existing room, reused</span><span class="l-new">new wall / new room</span><span class="l-plat">platform</span><span class="l-chair">chair</span></div>
   <p class="verdict" id="verdictB"></p>
@@ -166,7 +166,7 @@
         <tbody>
           <tr><td>Nursery (north strip plus the triangle to the classroom wall, 2 new walls, squared off, door at the east end of its south wall, large window with blinds onto the hall, set back 3 ft for the walkway behind the sound booth; no teaching area)</td><td>irregular</td><td class="num">≈350</td><td class="num">≈10 infants</td></tr>
           <tr><td>Sound booth, trapezoid at the back middle of the seating beside the center aisle (7 ft at the back, 5.5 ft at the front, 5 ft deep; 2 ft of it sits in the back aisle, leaving 5 ft of aisle behind it)</td><td>≈7 × 5</td><td class="num">≈31</td><td class="num"></td></tr>
-          <tr><td>Kitchen (the old alcove): microwave, two refrigerators, 45° wall with a 6 ft double door and an exit sign, rear exit door through it</td><td>irregular</td><td class="num">≈175</td><td class="num"></td></tr>
+          <tr><td>Kitchen (the old alcove): microwave, two refrigerators, a 6 ft double door set corner to corner between the nursery and the restroom block with an exit sign, rear exit door through it</td><td>irregular</td><td class="num">≈175</td><td class="num"></td></tr>
           <tr><td>Classroom 1 (existing 14 × 19 room, window into hall, corner cut at 45° toward the lobby), 5 × 5 teaching area, no aisle</td><td>14 × 19</td><td class="num">265</td><td class="num" id="seatsC1">—</td></tr>
           <tr><td>Classroom 2 (3 offices, remove 2 partitions), 5 × 5 teaching area</td><td>34 × 10.5</td><td class="num">357</td><td class="num" id="seatsC2">—</td></tr>
           <tr><td>Classroom 3, adult class (south recess, 1 new wall, reached from the lobby), 5 × 5 teaching area, 21 × 23 in chairs at 36 in rows; runs from the hallway wall to the vestibule, wall flush with the vestibule wall</td><td>41.7 × 10.6</td><td class="num">442</td><td class="num" id="seatsC3">—</td></tr>
@@ -353,7 +353,7 @@
   const WALKX = (Y) => (0.828 * Y - (27 - 22.15)) / 0.561; // X where the nursery-walkway edge crosses row-depth Y
   const BOOTH = (F) => [F.toW(-6, 5), F.toW(WALKX(5), 5), F.toW(WALKX(10), 10), F.toW(-6, 10)];
   const NURS = [[40.72, 13.45], [49.5, 7.5], [69, 7.5], [69, 22], [46.51, 22]]; // squared off; south wall y=22 (set back 3 ft for the booth walkway)
-  const KITCHEN = [[69, 9], [81, 9], [81, 25], [75, 25], [69, 19]]; // 45° wall across the corner with a double door, exit route
+  const KITCHEN = [[69, 9], [81, 9], [81, 25], [75, 25], [69, 22]]; // double door corner to corner, nursery corner (69,22) to restroom corner (75,25); exit route
   function nurseryWalls(o, newWall, chart) {
     o += line(46.51, 22, 69, 22, newWall) + line(69, 22, 69, 9, newWall);
     o += door(68.5, 22, 180, -1);
@@ -492,8 +492,8 @@
   function kitchenette(o, newWall, chart) {
     // kitchenette in the old alcove: counter + microwave on the east wall, two refrigerators on the nursery wall, rear exit path kept clear
     o += poly(KITCHEN, 'fill="var(--amber-soft)" stroke="none" opacity="0.55"');
-    o += line(69, 19, 75, 25, newWall) + door(69.88, 19.88, 45, 1) + door(74.12, 24.12, 225, -1);
-    if (!chart) o += text(70.6, 24.6, 'double door', 'fill="var(--accent)" font-size="0.9" text-anchor="middle"');
+    o += line(69, 22, 75, 25, newWall) + door(69.31, 22.16, 26.57, 1) + door(74.69, 24.84, 206.57, -1);
+    if (!chart) o += text(71.6, 25.6, 'double door', 'fill="var(--accent)" font-size="0.9" text-anchor="middle"');
     o += rect(69.3, 10, 2.6, 3, 'fill="var(--panel)" stroke="var(--wall)" stroke-width="0.2"') + rect(69.3, 13.3, 2.6, 3, 'fill="var(--panel)" stroke="var(--wall)" stroke-width="0.2"');
     o += rect(78.8, 17.5, 2.1, 6.5, 'fill="var(--panel)" stroke="var(--wall)" stroke-width="0.2"') + rect(79, 18.2, 1.7, 1.5, 'fill="var(--wall)"');
     o += text(70.6, 17.6, 'fridges', 'fill="var(--muted)" font-size="0.9" text-anchor="middle"') + text(77.4, 20.9, 'microwave', 'fill="var(--muted)" font-size="0.8" text-anchor="middle"');

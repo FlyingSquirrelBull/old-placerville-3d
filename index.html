@@ -65,7 +65,7 @@
   const OUTLINE = [[49.5, 7.5], [58, 7.5], [58, 9], [81, 9], [81, 25], [94, 25], [94, 45], [81, 45], [81, 63], [86, 63], [86, 80], [82, 80], [82, 82.5], [66.5, 82.5], [66.5, 80], [19.5, 80], [19.5, 82.5], [3, 82.5], [3, 79], [5, 79], [5, 46.5], [3, 46.5], [3, 39]];
   const HALL = [Q(10.6), [48.6, 25], [75, 25], [75, 45], [81, 45], [81, 63], [86, 63], [86, 69.4], [26.5, 69.4], [26.5, 46.7], [19.5, 46.7], Q(44.5)];
   const NURS = [[40.72, 13.45], [49.5, 7.5], [69, 7.5], [69, 22], [46.51, 22]];
-  const KITCHEN = [[69, 9], [81, 9], [81, 25], [75, 25], [69, 19]];
+  const KITCHEN = [[69, 9], [81, 9], [81, 25], [75, 25], [69, 22]];
   const OFFICE = [[3, 39], S(44.5), Q(44.5), [19.5, 46.7], [5.7, 46.7], [5, 46.5]];
   const FACEBAND = [Q(10.6), Q(44.5), [Q(44.5)[0] + 7 * Nn[0], Q(44.5)[1] + 7 * Nn[1]], [Q(10.6)[0] + 7 * Nn[0], Q(10.6)[1] + 7 * Nn[1]]];
   const COLS = [[57, 40], [40, 58]];
@@ -208,10 +208,10 @@
     const head = new THREE.Mesh(new THREE.BoxGeometry(13, 2, 0.45), M.newWall); head.position.set(56.5, 8, 22); scene.add(head);
     const win = new THREE.Mesh(new THREE.BoxGeometry(13, 4, 0.25), M.glass); win.position.set(56.5, 5, 22); scene.add(win);
     const blinds = new THREE.Mesh(new THREE.BoxGeometry(12.6, 3.8, 0.08), new THREE.MeshLambertMaterial({ color: 0xEDE8DA, transparent: true, opacity: 0.55 })); blinds.position.set(56.5, 5, 21.75); scene.add(blinds); }
-  // kitchen: 45° wall with a 6 ft double door and an exit sign (the rear exit is through the kitchen)
-  nw([69, 19], [75, 25], [[1.24, 7.24]]);
-  { const dm = new THREE.MeshLambertMaterial({ color: 0x8a6d4b }); [[70.94, 20.94], [73.06, 23.06]].forEach(([x, z]) => { const d = new THREE.Mesh(new THREE.BoxGeometry(2.9, 7, 0.2), dm); d.position.set(x, 3.5, z); d.rotation.y = -Math.PI / 4; d.castShadow = true; scene.add(d); });
-    const sign = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.6, 0.15), new THREE.MeshLambertMaterial({ color: 0xc0392b })); sign.position.set(72, 7.7, 22); sign.rotation.y = -Math.PI / 4; scene.add(sign); }
+  // kitchen: 6 ft double door corner to corner between the nursery and the restroom block, exit sign above (the rear exit is through the kitchen)
+  nw([69, 22], [75, 25], [[0.35, 6.35]]);
+  { const dm = new THREE.MeshLambertMaterial({ color: 0x8a6d4b }); const ra = -Math.atan2(3, 6); [[70.65, 22.83], [73.35, 24.17]].forEach(([x, z]) => { const d = new THREE.Mesh(new THREE.BoxGeometry(2.9, 7, 0.2), dm); d.position.set(x, 3.5, z); d.rotation.y = ra; d.castShadow = true; scene.add(d); });
+    const sign = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.6, 0.15), new THREE.MeshLambertMaterial({ color: 0xc0392b })); sign.position.set(72, 7.7, 23.5); sign.rotation.y = ra; scene.add(sign); }
   // sound booth: 8 x 6 ft, 3.5 ft half walls, at the back middle of the seating beside the center aisle
   { const sh = new THREE.Shape(); BOOTHP.forEach((p, i) => { const w = toW(p[0], p[1]); i ? sh.lineTo(w[0], w[1]) : sh.moveTo(w[0], w[1]); }); sh.closePath(); const bm = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 3.5, bevelEnabled: false }), new THREE.MeshLambertMaterial({ color: 0x4a5560 })); bm.rotation.x = Math.PI / 2; bm.position.y = 3.5; bm.castShadow = true; scene.add(bm); const c = toW(-2, 7.5); const desk = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.2, 2), new THREE.MeshLambertMaterial({ color: 0xcfc6b4 })); desk.position.set(c[0], 2.7, c[1]); desk.rotation.y = -Math.atan2(-D[1], -D[0]); desk.castShadow = true; scene.add(desk); }
   // kitchenette: two refrigerators, counter with microwave
@@ -250,7 +250,7 @@
   function label(txt, x, z, y, scale) { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128; const cx = cv.getContext('2d'); cx.fillStyle = 'rgba(15,20,25,0.72)'; cx.fillRect(0, 0, 512, 128); cx.font = '600 54px Archivo, Arial, sans-serif'; cx.fillStyle = '#F3F6F8'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(txt, 256, 64);
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false })); sp.position.set(x, y || 11, z); const s = scale || 1; sp.scale.set(14 * s, 3.5 * s, 1); scene.add(sp); return sp; }
   label('PLATFORM', 64, 61, 6); label('NURSERY', 57.5, 15); label('SOUND BOOTH', toW(-2, 7.5)[0], toW(-2, 7.5)[1], 7, 0.6); label('CLASSROOM 1', 12.6, 56); label('CLASSROOM 2', 29, 29); label('CLASSROOM 3', 47, 75); label('LOBBY', 12, 73); label('HALLWAY', 23, 59, 10, 0.7);
-  label("MEN'S", 86.5, 30, 10, 0.8); label("WOMEN'S", 84.5, 40.5, 10, 0.8); label('RESTROOM HALL', 77, 30.5, 10, 0.5); label('KITCHEN', 75, 14, 10, 0.75); label('EXIT', 72, 22, 9.2, 0.35); label('MAIN ENTRY', 4, 74, 7, 0.8); label("PASTOR'S OFFICE", 78, 64.5, 10, 0.7); label('EXIT', 75, 76, 10, 0.5); label('CHURCH OFFICE', 11, 41, 10, 0.75); label('PIANO', 77.2, 54.5, 7, 0.6);
+  label("MEN'S", 86.5, 30, 10, 0.8); label("WOMEN'S", 84.5, 40.5, 10, 0.8); label('RESTROOM HALL', 77, 30.5, 10, 0.5); label('KITCHEN', 75, 14, 10, 0.75); label('EXIT', 72, 23.5, 9.2, 0.35); label('MAIN ENTRY', 4, 74, 7, 0.8); label("PASTOR'S OFFICE", 78, 64.5, 10, 0.7); label('EXIT', 75, 76, 10, 0.5); label('CHURCH OFFICE', 11, 41, 10, 0.75); label('PIANO', 77.2, 54.5, 7, 0.6);
 
   document.getElementById('count').textContent = `${hallSeats.length} chairs + ${wc.length} wheelchair spaces in the hall · ${classSeats} classroom seats`;
 
