@@ -103,14 +103,14 @@
     <div class="sub">±5,685 RSF · 1 story · built 1999 · plan drawn 2026-10-20</div>
   </header>
 
-  <p>Two plans at the same scale. The first is the suite as it is today, traced from the Newmark listing brochure's floor plan and checked against the 20 walk-through photos. The second lays it out as a church with the main entry at the glass double door on the left (the building's visible front), the nursery beside the restrooms, and three classrooms. With the front door on the left and the restrooms on the right, the platform goes in the parking-lot corner and the seating fans toward it.</p>
+  <p>Two plans at the same scale. The first is the suite as it is today, traced from the Newmark listing brochure's floor plan and checked against the 20 walk-through photos. The others lay it out as a church with the main entry at the glass double door on the left (the building's visible front), the nursery beside the restrooms, and three classrooms. With the front door on the left and the restrooms on the right, the platform goes in the parking-lot corner and the seating fans toward it.</p>
   <p class="note">Accuracy: the brochure plan was scaled so the outlined suite encloses 5,685 SF, then cross-checked against 3-ft doors and 2×4 ceiling tiles. Expect ±2 ft on any dimension. The two columns are placed from the photos only; the brochure does not show them.</p>
 
   <h2>Existing conditions <span class="tag">as toured 2026-10-19</span></h2>
   <div class="plan" id="existing"></div>
   <div class="legend"><span class="l-exist">existing enclosed room</span><span class="l-glass">glass wall / window</span><span>door swing shown as arc</span><span>dashed = demising wall to leased space</span></div>
 
-  <h2>The plan: version A2 <span class="tag">corner platform, parking-lot corner · the preferred layout</span></h2>
+  <h2>Version A2 <span class="tag">corner platform, parking-lot corner</span></h2>
   <p>Lobby inside the left front door, 7 ft hallway up Classroom 1's wall to the back corner, 7 ft back aisle along the office row, nursery and women's room with 45° corner doors onto the back aisle, a kitchenette in the corner between them, three classrooms, corner platform in the parking-lot corner with the vestibule as the stage door.</p>
   <div class="plan" id="proposedB"></div>
   <div class="legend"><span class="l-exist">existing room, reused</span><span class="l-new">new wall / new room</span><span class="l-plat">platform</span><span class="l-chair">chair</span></div>
@@ -134,7 +134,7 @@
   </div>
 
   <h2>Other versions <span class="tag">A1 earlier · B south platform · C west platform</span></h2>
-  <p>Version A is the corner-platform family. A1 is the earlier pass of it; A2 above is the current one. Versions B and C keep the same rooms and move the platform to another wall; neither was chosen.</p>
+  <p>Version A is the corner-platform family. A1 is the earlier pass of it; A2 above is the current one. Versions B and C keep the same rooms and move the platform to another wall.</p>
   <h3 class="alt">Version A1, the earlier corner-platform layout</h3>
   <div class="plan" id="proposedA1"></div>
   <p class="verdict" id="verdictA1"></p>
@@ -165,7 +165,7 @@
         <thead><tr><th>Room (all options)</th><th>Size</th><th class="num">SF</th><th class="num">Seats</th></tr></thead>
         <tbody>
           <tr><td>Nursery (north strip plus the triangle to the classroom wall, 2 new walls, 45° corner door onto the back aisle; no teaching area)</td><td>irregular</td><td class="num">≈415</td><td class="num">≈12 infants</td></tr>
-          <tr><td>Sound booth, carved out of the back middle of the seating beside the center aisle</td><td>8 × 6</td><td class="num">48</td><td class="num"></td></tr>
+          <tr><td>Sound booth, trapezoid at the back middle of the seating beside the center aisle (7 ft at the back, 5.5 ft at the front, 5 ft deep; 2 ft of it sits in the back aisle, leaving 5 ft of aisle behind it)</td><td>≈7 × 5</td><td class="num">≈31</td><td class="num"></td></tr>
           <tr><td>Kitchenette (the old alcove): microwave, two refrigerators, rear exit path kept clear</td><td>12 × 16</td><td class="num">192</td><td class="num"></td></tr>
           <tr><td>Classroom 1 (existing 14 × 19 room, window into hall, corner cut at 45° toward the lobby), 5 × 5 teaching area, no aisle</td><td>14 × 19</td><td class="num">265</td><td class="num" id="seatsC1">—</td></tr>
           <tr><td>Classroom 2 (3 offices, remove 2 partitions), 5 × 5 teaching area</td><td>34 × 10.5</td><td class="num">357</td><td class="num" id="seatsC2">—</td></tr>
@@ -349,7 +349,7 @@
   const inPoly = (pt, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > pt[1]) !== (b[1] > pt[1]) && pt[0] < (b[0] - a[0]) * (pt[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
   const area = (poly) => Math.abs(poly.reduce((acc, p, i) => { const q = poly[(i + 1) % poly.length]; return acc + p[0] * q[1] - q[0] * p[1]; }, 0)) / 2;
   const Nn = [0.561, 0.828];
-  const BOOTH = (F) => [F.toW(-6, 7.25), F.toW(2, 7.25), F.toW(2, 13.25), F.toW(-6, 13.25)];
+  const BOOTH = (F) => [F.toW(-5, 5.25), F.toW(2, 5.25), F.toW(2, 10.25), F.toW(-3.5, 10.25)];
   const HALL = [Q(10.6), [48.6, 25], [75, 25], [75, 45], [81, 45], [81, 63], [86, 63], [86, 69.4], [68.2, 69.4], [68.2, 68], [32, 68], [32, 71.9], [26.5, 71.9], [26.5, 46.7], [19.5, 46.7], Q(44.5)];
   const OFFICE = [[3, 39], S(44.5), Q(44.5), [19.5, 46.7], [5.7, 46.7], [5, 46.5]];
   const FACEBAND = [Q(10.6), Q(44.5), [Q(44.5)[0] + 7 * Nn[0], Q(44.5)[1] + 7 * Nn[1]], [Q(10.6)[0] + 7 * Nn[0], Q(10.6)[1] + 7 * Nn[1]]];
@@ -541,7 +541,7 @@
       if (A1) { o += text(77, 65.5, 'backstage', 'fill="var(--muted)" font-size="1.3" text-anchor="middle"') + text(77, 67.2, 'stage door ↓', 'fill="var(--muted)" font-size="1.1" text-anchor="middle"') + text(75.1, 72.9, 'Vestibule', labS) + text(75.1, 79.6, 'stage door / exit', labS); }
       else o = platformExtras(o, newWall);
       if (A1) { const sd = frame.toW(-31.5, 2.6); o += `<g transform="rotate(-34.1 ${fmt(sd[0])} ${fmt(sd[1])})">${rect(fmt(sd[0]), fmt(sd[1]), 4.5, 2, 'fill="none" stroke="var(--wall)" stroke-width="0.2"')}<text x="${fmt(sd[0] + 2.25)}" y="${fmt(sd[1] + 1.5)}" fill="var(--muted)" font-size="1.05" text-anchor="middle">sound</text></g>`; }
-      else { const bp = BOOTH(frame); o += poly(bp, 'fill="var(--exist)" stroke="var(--accent)" stroke-width="0.35" stroke-dasharray="0.9 0.5"'); const bc = frame.toW(-2, 10.25); o += `<text x="${fmt(bc[0])}" y="${fmt(bc[1])}" fill="var(--ink)" font-size="1.05" text-anchor="middle" transform="rotate(-34.1 ${fmt(bc[0])} ${fmt(bc[1])})"><tspan x="${fmt(bc[0])}" dy="-0.3">Sound booth</tspan><tspan x="${fmt(bc[0])}" dy="1.4">8' × 6'</tspan></text>`; }
+      else { const bp = BOOTH(frame); o += poly(bp, 'fill="var(--exist)" stroke="var(--accent)" stroke-width="0.35" stroke-dasharray="0.9 0.5"'); const bc = frame.toW(-1.5, 7.75); o += `<text x="${fmt(bc[0])}" y="${fmt(bc[1])}" fill="var(--ink)" font-size="0.95" text-anchor="middle" transform="rotate(-34.1 ${fmt(bc[0])} ${fmt(bc[1])})"><tspan x="${fmt(bc[0])}" dy="-0.3">Sound booth</tspan><tspan x="${fmt(bc[0])}" dy="1.3">≈7' × 5'</tspan></text>`; }
       const bl = frame.toW(-14, 3.6);
       o += `<text x="${fmt(bl[0])}" y="${fmt(bl[1])}" fill="var(--muted)" font-size="1.2" text-anchor="middle" transform="rotate(-34.1 ${fmt(bl[0])} ${fmt(bl[1])})">back aisle 7' wide</text>`;
       const al = frame.toW(-8, 22);
@@ -646,7 +646,7 @@
     o += poly([[40.72, 13.45], [49.5, 7.5], [69, 7.5], [69, 21], [65, 25], [48.6, 25], [46.62, 22.15]], 'fill="var(--accent-soft)" stroke="none" opacity="0.7"');
     o += line(46.62, 22.15, 48.6, 25, newWall) + line(48.6, 25, 65, 25, newWall) + line(65, 25, 69, 21, newWall) + line(69, 21, 69, 9, newWall) + door(68.08, 21.92, 135, -1);
     o += text(57.5, 15.5, 'Nursery', lab) + text(57.5, 17.5, "≈415 SF · ≈12 infants", labS);
-    { const bp = BOOTH(F); o += poly(bp, 'fill="var(--exist)" stroke="var(--accent)" stroke-width="0.35" stroke-dasharray="0.9 0.5"'); const bc = F.toW(-2, 10.25); o += `<text x="${fmt(bc[0])}" y="${fmt(bc[1])}" fill="var(--ink)" font-size="1.05" text-anchor="middle" transform="rotate(-34.1 ${fmt(bc[0])} ${fmt(bc[1])})"><tspan x="${fmt(bc[0])}" dy="-0.3">SOUND BOOTH</tspan><tspan x="${fmt(bc[0])}" dy="1.4">8' × 6'</tspan></text>`; }
+    { const bp = BOOTH(F); o += poly(bp, 'fill="var(--exist)" stroke="var(--accent)" stroke-width="0.35" stroke-dasharray="0.9 0.5"'); const bc = F.toW(-1.5, 7.75); o += `<text x="${fmt(bc[0])}" y="${fmt(bc[1])}" fill="var(--ink)" font-size="0.95" text-anchor="middle" transform="rotate(-34.1 ${fmt(bc[0])} ${fmt(bc[1])})"><tspan x="${fmt(bc[0])}" dy="-0.3">SOUND BOOTH</tspan><tspan x="${fmt(bc[0])}" dy="1.3">≈7' × 5'</tspan></text>`; }
     o = kitchenette(o, newWall, true);
     o += poly([[79, 25], [94, 25], [94, 45], [75, 45], [75, 29]], 'fill="var(--panel)" stroke="none"') + poly([[79, 25], [94, 25], [94, 45], [75, 45], [75, 29]], innerAttr) + line(75, 35.5, 94, 35.5, innerAttr) + line(79, 25, 75, 29, newWall);
     o += door(78.08, 25.92, 135, 1) + door(75, 37.5, 90, 1) + line(76, 45, 79, 45, 'stroke="var(--accent)" stroke-width="0.45" stroke-dasharray="0.5 0.4"');
