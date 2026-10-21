@@ -381,8 +381,8 @@
     const D = [-0.828, 0.561], O = Q(10.6);
     return {
       platform, backstage, nurseryAisle, mensDoor, oldDoor,
-      keepOut: [platform, backstage, oldDoor, nurseryAisle, FACEBAND],
-      softKeep: [BOOTH({ toW: (X, Y) => [O[0] - D[0] * X + Nn[0] * Y, O[1] - D[1] * X + Nn[1] * Y] })],
+      keepOut: [platform, backstage, oldDoor, FACEBAND],
+      softKeep: [nurseryAisle, BOOTH({ toW: (X, Y) => [O[0] - D[0] * X + Nn[0] * Y, O[1] - D[1] * X + Nn[1] * Y] })],
       frame: { toW: (X, Y) => [O[0] - D[0] * X + Nn[0] * Y, O[1] - D[1] * X + Nn[1] * Y], rot: -34.1 },
       rows: { Y0: 8, Y1: 35, X0: -62, X1: 32, aisle: [-10, -6] }
     };
@@ -554,7 +554,7 @@
       backstage = BACKSTAGE;
       const D = [-0.828, 0.561], O = Q(10.6);
       frame = { toW: (X, Y) => [O[0] - D[0] * X + Nn[0] * Y, O[1] - D[1] * X + Nn[1] * Y], rot: -34.1 };
-      keepOut = [platform, backstage, oldDoor, nurseryAisle, faceBand].concat(A1 ? [mensDoor] : []); softKeep = A1 ? [] : [BOOTH(frame)];
+      keepOut = [platform, backstage, oldDoor, faceBand].concat(A1 ? [mensDoor, nurseryAisle] : []); softKeep = A1 ? [] : [nurseryAisle, BOOTH(frame)];
       rows = { Y0: 8, Y1: 37, X0: -62, X1: 32, aisle: [-10, -6] };
       o += poly(platform, 'fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="0.3"');
       o += poly(backstage, 'fill="var(--exist)" stroke="none"');

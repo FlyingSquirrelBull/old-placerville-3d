@@ -75,10 +75,10 @@
   const backstage = [[64.1, 69.4], [81, 58], [81, 63], [86, 63], [86, 69.4]];
   const WALKX = (Y) => (0.828 * Y - (27 - 22.15)) / 0.561;
   const BOOTHP = [[-6, 5], [WALKX(5), 5], [WALKX(10), 10], [-6, 10]];
-  const keepOut = [platform, backstage, [[75, 45], [81, 45], [81, 50.5], [75, 50.5]], [[46.5, 22], [75, 22], [75, 27], [46.5, 27]], FACEBAND];
+  const keepOut = [platform, backstage, [[75, 45], [81, 45], [81, 50.5], [75, 50.5]], FACEBAND];
   const D = [-0.828, 0.561], O = Q(10.6);
   const toW = (X, Y) => [O[0] - D[0] * X + Nn[0] * Y, O[1] - D[1] * X + Nn[1] * Y];
-  const softKeep = [BOOTHP.map(p => toW(p[0], p[1]))];
+  const softKeep = [[[46.5, 22], [75, 22], [75, 27], [46.5, 27]], BOOTHP.map(p => toW(p[0], p[1]))];
   const rows = { Y0: 8, Y1: 35, X0: -62, X1: 32, aisle: [-10, -6] };
   function placeHallChairs() {
     const out = [];
