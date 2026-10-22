@@ -38,7 +38,7 @@
 
 <header>
   <h1>10360 Old Placerville Rd, inside in 3D</h1>
-  <div class="sub">same geometry as the plan · 1 unit = 1 ft · walls drawn to 9–10 ft · 21 × 23 in chairs in the hall and the adult class</div>
+  <div class="sub">version A3 · 1 unit = 1 ft · 9.5 ft acoustic-tile ceiling · lodge finishes: shiplap, timber, barn-wood backdrop, stone-faced oak platform · 21 × 23 in chairs</div>
 </header>
 <div class="bar">
   <button id="vOver" class="on">Overview</button>
@@ -48,10 +48,11 @@
   <button id="vNurs">Kitchen corner</button>
   <span class="spacer"></span>
   <button id="tWalls">Lower walls</button>
+  <button id="tCeil">Hide ceiling</button>
   <span class="count" id="count">—</span>
 </div>
 <div id="view">
-  <div class="legend"><i style="background:#8E9AA6"></i>chair<br><i style="background:#D9A441"></i>platform / teaching area<br><i style="background:#E0B457;opacity:.6"></i>wheelchair space<br><i style="background:#2FA3AE"></i>new wall<br><i style="background:#6FB0D6;opacity:.7"></i>glass</div>
+  <div class="legend"><i style="background:#3b3f45"></i>chair (charcoal, wood frame)<br><i style="background:#c9a06a"></i>oak platform, stone face<br><i style="background:#6b4a33"></i>barn-wood backdrop<br><i style="background:#F3F2EE"></i>9.5 ft tile ceiling<br><i style="background:#E0B457;opacity:.6"></i>wheelchair space<br><i style="background:#2FA3AE"></i>new wall (teal cap)<br><i style="background:#6FB0D6;opacity:.7"></i>glass</div>
   <div class="hint">drag to orbit · wheel or pinch to zoom · right-drag or shift-drag to pan</div>
 </div>
 
@@ -129,22 +130,43 @@
   sun.shadow.mapSize.set(2048, 2048); const sc = sun.shadow.camera; sc.left = -90; sc.right = 90; sc.top = 90; sc.bottom = -90; sc.near = 10; sc.far = 300;
   scene.add(sun);
 
+  // ---------- procedural finish textures (lodge style, 2026-10-21) ----------
+  function tex(w, h, draw, rx, ry) { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; draw(cv.getContext('2d'), w, h); const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx || 1, ry || 1); t.anisotropy = 4; return t; }
+  const rnd = (seed) => { let s = seed; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; };
+  const T = {
+    shiplap: tex(256, 256, (c, w, h) => { c.fillStyle = '#F4F1EA'; c.fillRect(0, 0, w, h); for (let y = 0; y < h; y += 32) { c.fillStyle = 'rgba(0,0,0,0.13)'; c.fillRect(0, y, w, 3); c.fillStyle = 'rgba(255,255,255,0.5)'; c.fillRect(0, y + 3, w, 2); } }, 4, 1.2),
+    barn: tex(512, 512, (c, w, h) => { const r = rnd(7); const cols = ['#6b4a33', '#7d5a3f', '#5a3e2b', '#8a6a4c', '#4f3627', '#9a7a58']; for (let y = 0; y < h; y += 42) { c.fillStyle = cols[Math.floor(r() * cols.length)]; c.fillRect(0, y, w, 42); for (let k = 0; k < 40; k++) { c.fillStyle = 'rgba(0,0,0,' + (0.05 + r() * 0.12) + ')'; const x = r() * w; c.fillRect(x, y + r() * 42, 20 + r() * 120, 1.5); } c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(0, y, w, 2); } }, 2, 1),
+    stone: tex(512, 256, (c, w, h) => { const r = rnd(3); c.fillStyle = '#5b5e5c'; c.fillRect(0, 0, w, h); const greys = ['#8d8f8a', '#a3a49c', '#787a75', '#9b9a90', '#6f726e', '#b0ada2']; for (let y = 0; y < h; y += 34) { let x = (y / 34) % 2 ? 20 : 0; while (x < w) { const ww = 50 + r() * 70; c.fillStyle = greys[Math.floor(r() * greys.length)]; c.beginPath(); c.roundRect(x + 2, y + 2, ww - 4, 30, 6); c.fill(); x += ww; } } }, 3, 1),
+    oak: tex(512, 512, (c, w, h) => { const r = rnd(11); const cols = ['#c9a06a', '#d4ad78', '#bf945f', '#caa470']; for (let x = 0; x < w; x += 64) { c.fillStyle = cols[Math.floor(r() * cols.length)]; c.fillRect(x, 0, 64, h); c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x, 0, 1.5, h); for (let k = 0; k < 25; k++) { c.fillStyle = 'rgba(90,60,30,' + (0.08 + r() * 0.1) + ')'; c.fillRect(x + r() * 64, r() * h, 1.2, 30 + r() * 150); } } }, 3, 3),
+    timber: tex(256, 256, (c, w, h) => { const r = rnd(5); c.fillStyle = '#9b6b3f'; c.fillRect(0, 0, w, h); for (let k = 0; k < 60; k++) { c.fillStyle = 'rgba(60,35,15,' + (0.1 + r() * 0.2) + ')'; c.fillRect(r() * w, 0, 1 + r() * 3, h); } }, 1, 3),
+    tile: tex(512, 256, (c, w, h) => { c.fillStyle = '#F3F2EE'; c.fillRect(0, 0, w, h); c.fillStyle = '#C9CBC6'; for (let x = 0; x < w; x += 256) c.fillRect(x, 0, 3, h); for (let y = 0; y < h; y += 128) c.fillRect(0, y, w, 3); const r = rnd(9); c.fillStyle = 'rgba(0,0,0,0.06)'; for (let k = 0; k < 900; k++) c.fillRect(r() * w, r() * h, 2, 2); }, 1, 1),
+    carpet: tex(256, 256, (c, w, h) => { const r = rnd(2); c.fillStyle = '#3a3d41'; c.fillRect(0, 0, w, h); for (let k = 0; k < 3000; k++) { c.fillStyle = 'rgba(255,255,255,' + (r() * 0.08) + ')'; c.fillRect(r() * w, r() * h, 2, 2); } }, 1, 1)
+  };
+  T.tile.repeat.set(1 / 4, 1 / 2); // 2 x 4 ft tiles: texture is 4 ft wide, 2 ft tall per repeat
+  T.carpet.repeat.set(1 / 3, 1 / 3);
   const M = {
     floor: new THREE.MeshLambertMaterial({ color: 0xD9D2BE, side: THREE.DoubleSide }),
-    hall: new THREE.MeshLambertMaterial({ color: 0xCFC7B0, side: THREE.DoubleSide }),
+    hall: new THREE.MeshLambertMaterial({ map: T.carpet, side: THREE.DoubleSide }),
     room: new THREE.MeshLambertMaterial({ color: 0xE7E0CC, side: THREE.DoubleSide }),
     newroom: new THREE.MeshLambertMaterial({ color: 0xBFDADC, side: THREE.DoubleSide }),
-    wall: new THREE.MeshLambertMaterial({ color: 0xF2EFE8 }),
+    wall: new THREE.MeshLambertMaterial({ map: T.shiplap }),
     wallTop: new THREE.MeshLambertMaterial({ color: 0x2A3540 }),
-    newWall: new THREE.MeshLambertMaterial({ color: 0x2FA3AE }),
+    newWall: new THREE.MeshLambertMaterial({ map: T.shiplap }),
+    newWallCap: new THREE.MeshLambertMaterial({ color: 0x2FA3AE }),
+    barn: new THREE.MeshLambertMaterial({ map: T.barn }),
+    stone: new THREE.MeshLambertMaterial({ map: T.stone }),
+    oak: new THREE.MeshLambertMaterial({ map: T.oak }),
+    timber: new THREE.MeshLambertMaterial({ map: T.timber }),
+    tile: new THREE.MeshLambertMaterial({ map: T.tile, side: THREE.DoubleSide }),
+    black: new THREE.MeshLambertMaterial({ color: 0x15171a }),
     glass: new THREE.MeshLambertMaterial({ color: 0x6FB0D6, transparent: true, opacity: 0.45 }),
-    plat: new THREE.MeshLambertMaterial({ color: 0xD9A441 }),
+    plat: new THREE.MeshLambertMaterial({ map: T.oak }),
     teach: new THREE.MeshLambertMaterial({ color: 0xE0B457 }),
     wc: new THREE.MeshLambertMaterial({ color: 0xE0B457, transparent: true, opacity: 0.7 }),
-    chair: new THREE.MeshLambertMaterial({ color: 0x8E9AA6 }),
-    chairDark: new THREE.MeshLambertMaterial({ color: 0x5F6B76 }),
+    chair: new THREE.MeshLambertMaterial({ color: 0x3b3f45 }),
+    chairDark: new THREE.MeshLambertMaterial({ color: 0x9b6b3f }),
     ground: new THREE.MeshLambertMaterial({ color: 0x3b4149 }),
-    col: new THREE.MeshLambertMaterial({ color: 0xF6F3EC })
+    col: new THREE.MeshLambertMaterial({ map: T.timber })
   };
   const shapeOf = (pts) => { const sh = new THREE.Shape(); pts.forEach((p, i) => i ? sh.lineTo(p[0], p[1]) : sh.moveTo(p[0], p[1])); sh.closePath(); return sh; };
   function flat(pts, mat, y) { const m = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(pts)), mat); m.rotation.x = Math.PI / 2; m.position.y = y || 0; m.receiveShadow = true; scene.add(m); return m; }
@@ -155,7 +177,7 @@
     const segs = []; let d = 0; (gaps || []).slice().sort((p, q) => p[0] - q[0]).forEach(g => { if (g[0] > d) segs.push([d, g[0]]); d = g[1]; }); if (d < L) segs.push([d, L]);
     segs.forEach(([d0, d1]) => { const len = d1 - d0; if (len <= 0.05) return; const m = new THREE.Mesh(new THREE.BoxGeometry(len, h, t), mat);
       const mid = (d0 + d1) / 2; m.position.set(ax + (bx - ax) * mid / L, h / 2, az + (bz - az) * mid / L); m.rotation.y = ang; m.castShadow = true; m.receiveShadow = true; walls.add(m);
-      const cap = new THREE.Mesh(new THREE.BoxGeometry(len, 0.12, t + 0.02), mat === M.newWall ? M.newWall : (mat === M.glass ? M.glass : M.wallTop)); cap.position.set(m.position.x, h + 0.06, m.position.z); cap.rotation.y = ang; walls.add(cap); });
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(len, 0.12, t + 0.02), mat === M.newWall ? M.newWallCap : (mat === M.glass ? M.glass : M.wallTop)); cap.position.set(m.position.x, h + 0.06, m.position.z); cap.rotation.y = ang; walls.add(cap); });
   }
   const HX = 10, HI = 9;
   // ground + floors
@@ -173,7 +195,7 @@
   flat(rectPts(26.5, 69.4, 68.2, 80), M.newroom, 0.03);
   flat(backstage, M.room, 0.03);
   // platform
-  { const geo = new THREE.ExtrudeGeometry(shapeOf(platform), { depth: 1.25, bevelEnabled: false }); const m = new THREE.Mesh(geo, M.plat); m.rotation.x = Math.PI / 2; m.position.y = 1.25; m.castShadow = true; m.receiveShadow = true; scene.add(m); }
+  { const geo = new THREE.ExtrudeGeometry(shapeOf(platform), { depth: 1.25, bevelEnabled: false }); const m = new THREE.Mesh(geo, [M.oak, M.stone]); m.rotation.x = Math.PI / 2; m.position.y = 1.25; m.castShadow = true; m.receiveShadow = true; scene.add(m); }
   // teaching areas
   teach.forEach(t => { const m = new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 5), M.teach); m.position.set(t.c[0], 0.25, t.c[1]); m.rotation.y = -Math.atan2(t.uy, t.ux); m.castShadow = true; scene.add(m); });
   // exterior walls with door and glass segments
@@ -221,14 +243,23 @@
   nw([26.5, 69.4], [68.2, 69.4]);
   nw([19.5, 61.9], [15.5, 65.9]);
   nw([18.55, 41.16], [19.5, 46.7], [[1.2, 4.2]]);
-  nw([64.1, 69.4], [81, 58]);
+  wall(64.1, 69.4, 81, 58, HI, 0.5, M.barn); // backdrop: reclaimed barn wood
+  { const cx = 72.55, cz = 63.7, nx = 0.561, nz = 0.828; const ang = -Math.atan2(58 - 69.4, 81 - 64.1); const cm = new THREE.MeshLambertMaterial({ color: 0x7a4f2a }); const v = new THREE.Mesh(new THREE.BoxGeometry(0.7, 6, 0.35), cm); v.position.set(cx - nx * 0.45, 5.2, cz - nz * 0.45); v.rotation.y = ang; scene.add(v); const hz = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.7, 0.35), cm); hz.position.set(cx - nx * 0.45, 6.4, cz - nz * 0.45); hz.rotation.y = ang; scene.add(hz); }
   { const g2 = new THREE.Group(); const body = new THREE.Mesh(new THREE.BoxGeometry(5.4, 1.0, 4.9), new THREE.MeshLambertMaterial({ color: 0x15181c })); body.position.y = 2.6; g2.add(body);
     const lid = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.12, 4.2), new THREE.MeshLambertMaterial({ color: 0x23272c })); lid.position.set(0.4, 3.3, 0); lid.rotation.z = 0.55; g2.add(lid);
     [[-2.3, -2.0], [-2.3, 2.0], [2.3, 0]].forEach(([lx, lz]) => { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 2.1, 0.35), body.material); leg.position.set(lx, 1.05, lz); g2.add(leg); });
     const bench = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.6, 2.6), new THREE.MeshLambertMaterial({ color: 0x3a3f46 })); bench.position.set(-3.5, 0.8, 0); g2.add(bench);
     g2.position.set(76.2, 1.25, 55.2); g2.rotation.y = -Math.atan2(0.561, -0.828); g2.traverse(m => { m.castShadow = true; }); scene.add(g2); }
   // columns
-  COLS.forEach(c => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, HI, 16), M.col); m.position.set(c[0], HI / 2, c[1]); m.castShadow = true; scene.add(m); });
+  COLS.forEach(c => { const m = new THREE.Mesh(new THREE.BoxGeometry(1.6, HI, 1.6), M.timber); m.position.set(c[0], HI / 2, c[1]); m.castShadow = true; scene.add(m); });
+  // lodge lighting: black gooseneck sconces on the hall walls, pendants over the aisle, ceiling at 9.5 ft
+  const CEIL = 9.5; const ceiling = new THREE.Group(); scene.add(ceiling);
+  { const m = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(HALL)), M.tile); m.rotation.x = Math.PI / 2; m.position.y = CEIL; ceiling.add(m); }
+  const sconce = (x, z, nx, nz) => { const a = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.15, 1.6), M.black); a.position.set(x + nx * 0.8, 7.2, z + nz * 0.8); a.rotation.y = -Math.atan2(nz, nx); scene.add(a); const sh = new THREE.Mesh(new THREE.ConeGeometry(0.55, 0.6, 12, 1, true), M.black); sh.position.set(x + nx * 1.6, 6.9, z + nz * 1.6); scene.add(sh); };
+  for (let s = 14; s < 42; s += 7) { const q = Q(s); sconce(q[0], q[1], Nn[0], Nn[1]); }
+  for (let z = 34; z < 66; z += 8) sconce(26.5, z, 1, 0);
+  for (let y = 10; y < 36; y += 8) { const p = toW(-8, y); const cord = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.6, 0.08), M.black); cord.position.set(p[0], CEIL - 0.8, p[1]); ceiling.add(cord); const sh = new THREE.Mesh(new THREE.ConeGeometry(0.9, 0.8, 14, 1, true), M.black); sh.position.set(p[0], CEIL - 1.9, p[1]); ceiling.add(sh); }
+  const lamp = new THREE.PointLight(0xffe2b8, 0.6, 60); lamp.position.set(60, 8, 50); scene.add(lamp);
   // wheelchair spaces
   wc.forEach(w => { const wd = 2 * CW + 0.08; const ctr = toW(w.X + wd / 2, w.Y); const m = new THREE.Mesh(new THREE.BoxGeometry(wd, 0.06, CD), M.wc); m.position.set(ctr[0], 0.06, ctr[1]); m.rotation.y = -Math.atan2(-D[1], -D[0]); scene.add(m); });
   // chairs (instanced): seat, back, two side legs; chair faces +Z in its own frame
@@ -265,10 +296,12 @@
     vDoor: { t: [26, 4, 55], th: Math.atan2(8 - 26, 74 - 55), ph: 1.5, d: 26 },
     vNurs: { t: [70, 3, 24], th: Math.atan2(76 - 70, 12 - 24), ph: 1.3, d: 22 }
   };
-  function go(id) { const p = presets[id]; target.set(p.t[0], p.t[1], p.t[2]); theta = p.th; phi = p.ph; dist = p.d; apply(); document.querySelectorAll('.bar button[id^="v"]').forEach(b => b.classList.toggle('on', b.id === id)); }
+  function go(id) { const p = presets[id]; target.set(p.t[0], p.t[1], p.t[2]); theta = p.th; phi = p.ph; dist = p.d; apply(); if (typeof setCeil === 'function') setCeil(id !== 'vOver'); document.querySelectorAll('.bar button[id^="v"]').forEach(b => b.classList.toggle('on', b.id === id)); }
   Object.keys(presets).forEach(id => document.getElementById(id).addEventListener('click', () => go(id)));
   let lowered = false;
-  document.getElementById('tWalls').addEventListener('click', (e) => { lowered = !lowered; walls.scale.y = lowered ? 0.35 : 1; e.target.textContent = lowered ? 'Full-height walls' : 'Lower walls'; e.target.classList.toggle('on', lowered); });
+  let ceilOn = true; const setCeil = (on) => { ceilOn = on; ceiling.visible = on; const b = document.getElementById('tCeil'); b.textContent = on ? 'Hide ceiling' : 'Show ceiling'; b.classList.toggle('on', !on); };
+  document.getElementById('tCeil').addEventListener('click', () => setCeil(!ceilOn)); setCeil(false);
+  document.getElementById('tWalls').addEventListener('click', (e) => { lowered = !lowered; walls.scale.y = lowered ? 0.35 : 1; if (lowered) setCeil(false); e.target.textContent = lowered ? 'Full-height walls' : 'Lower walls'; e.target.classList.toggle('on', lowered); });
   const el = renderer.domElement;
   let drag = null;
   el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, b: e.button, shift: e.shiftKey }; el.setPointerCapture(e.pointerId); });
