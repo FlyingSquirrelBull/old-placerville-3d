@@ -149,9 +149,10 @@
     hall: new THREE.MeshLambertMaterial({ map: T.carpet, side: THREE.DoubleSide }),
     room: new THREE.MeshLambertMaterial({ color: 0xE7E0CC, side: THREE.DoubleSide }),
     newroom: new THREE.MeshLambertMaterial({ color: 0xBFDADC, side: THREE.DoubleSide }),
-    wall: new THREE.MeshLambertMaterial({ map: T.shiplap }),
+    wall: new THREE.MeshLambertMaterial({ color: 0xF2EFE8 }),
+    shiplap: new THREE.MeshLambertMaterial({ map: T.shiplap }),
     wallTop: new THREE.MeshLambertMaterial({ color: 0x2A3540 }),
-    newWall: new THREE.MeshLambertMaterial({ map: T.shiplap }),
+    newWall: new THREE.MeshLambertMaterial({ color: 0xF2EFE8 }),
     newWallCap: new THREE.MeshLambertMaterial({ color: 0x2FA3AE }),
     barn: new THREE.MeshLambertMaterial({ map: T.barn }),
     stone: new THREE.MeshLambertMaterial({ map: T.stone }),
@@ -177,6 +178,8 @@
     const segs = []; let d = 0; (gaps || []).slice().sort((p, q) => p[0] - q[0]).forEach(g => { if (g[0] > d) segs.push([d, g[0]]); d = g[1]; }); if (d < L) segs.push([d, L]);
     segs.forEach(([d0, d1]) => { const len = d1 - d0; if (len <= 0.05) return; const m = new THREE.Mesh(new THREE.BoxGeometry(len, h, t), mat);
       const mid = (d0 + d1) / 2; m.position.set(ax + (bx - ax) * mid / L, h / 2, az + (bz - az) * mid / L); m.rotation.y = ang; m.castShadow = true; m.receiveShadow = true; walls.add(m);
+      // plain white everywhere; shiplap only on a face that looks into the auditorium (Rocky 2026-10-21)
+      if (mat === M.wall || mat === M.newWall) { const zx = -(bz - az) / L, zz = (bx - ax) / L; const side = (s) => inPoly([m.position.x + zx * s, m.position.z + zz * s], HALL) ? M.shiplap : mat; m.material = [mat, mat, mat, mat, side(1.2), side(-1.2)]; }
       const cap = new THREE.Mesh(new THREE.BoxGeometry(len, 0.12, t + 0.02), mat === M.newWall ? M.newWallCap : (mat === M.glass ? M.glass : M.wallTop)); cap.position.set(m.position.x, h + 0.06, m.position.z); cap.rotation.y = ang; walls.add(cap); });
   }
   const HX = 10, HI = 9;
