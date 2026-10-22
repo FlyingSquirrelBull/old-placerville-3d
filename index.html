@@ -34,6 +34,11 @@
   .legend { position: absolute; right: 12px; top: 10px; font-family: var(--mono); font-size: 11.5px; color: #c9d3dc; background: rgba(15,20,25,0.55); padding: 6px 10px; border-radius: 4px; line-height: 1.7; }
   .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
   @media (max-width: 480px) { .legend { display: none; } }
+  .walkpad { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); display: none; grid-template-columns: repeat(3, 46px); grid-auto-rows: 46px; gap: 6px; }
+  .walkpad.on { display: grid; }
+  .walkpad button { font-size: 20px; padding: 0; background: rgba(15,20,25,0.72); color: #F3F6F8; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; touch-action: none; user-select: none; }
+  .walkpad button:hover { border-color: var(--accent); }
+  .walkpad .lbl { grid-column: 1 / span 3; font-family: var(--mono); font-size: 11px; color: #c9d3dc; text-align: center; background: rgba(15,20,25,0.55); border-radius: 4px; padding: 4px; }
 </style>
 
 <header>
@@ -47,13 +52,15 @@
   <button id="vDoor">From the lobby, up the hallway</button>
   <button id="vNurs">Kitchen corner</button>
   <span class="spacer"></span>
+  <button id="tWalk">Walk mode</button>
   <button id="tWalls">Lower walls</button>
   <button id="tCeil">Hide ceiling</button>
   <span class="count" id="count">—</span>
 </div>
 <div id="view">
   <div class="legend"><i style="background:#3b3f45"></i>chair (charcoal, wood frame)<br><i style="background:#c9a06a"></i>oak platform, stone face<br><i style="background:#6b4a33"></i>barn-wood backdrop<br><i style="background:#F3F2EE"></i>9.5 ft tile ceiling<br><i style="background:#E0B457;opacity:.6"></i>wheelchair space<br><i style="background:#2FA3AE"></i>new wall (teal cap)<br><i style="background:#6FB0D6;opacity:.7"></i>glass</div>
-  <div class="hint">drag to orbit · wheel or pinch to zoom · right-drag or shift-drag to pan</div>
+  <div class="hint" id="hint">drag to orbit · wheel or pinch to zoom · right-drag or shift-drag to pan</div>
+  <div class="walkpad" id="walkpad"><button data-m="tl" title="turn left">⟲</button><button data-m="f" title="forward">▲</button><button data-m="tr" title="turn right">⟳</button><button data-m="l" title="step left">◀</button><button data-m="b" title="back">▼</button><button data-m="r" title="step right">▶</button><div class="lbl">eye height 5.5 ft · arrows or WASD · drag to look</div></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -291,7 +298,16 @@
   // ---------- camera control ----------
   const target = new THREE.Vector3(47, 2, 45);
   let theta = -0.9, phi = 0.95, dist = 125;
-  function apply() { camera.position.set(target.x + dist * Math.sin(phi) * Math.sin(theta), target.y + dist * Math.cos(phi), target.z + dist * Math.sin(phi) * Math.cos(theta)); camera.lookAt(target); }
+  // walk mode: eye locked at 5.5 ft, step with arrows / WASD / the on-screen pad, drag to look (Rocky 2026-10-21)
+  const W = { on: false, x: 60, z: 56, yaw: Math.atan2(38 - 60, 32 - 56) + Math.PI, pitch: -0.05, EYE: 5.5 };
+  function apply() {
+    if (W.on) { camera.position.set(W.x, W.EYE, W.z); camera.lookAt(W.x + Math.sin(W.yaw) * Math.cos(W.pitch), W.EYE + Math.sin(W.pitch), W.z + Math.cos(W.yaw) * Math.cos(W.pitch)); return; }
+    camera.position.set(target.x + dist * Math.sin(phi) * Math.sin(theta), target.y + dist * Math.cos(phi), target.z + dist * Math.sin(phi) * Math.cos(theta)); camera.lookAt(target); }
+  function step(m, amt) { const a = amt || 2; const fx = Math.sin(W.yaw), fz = Math.cos(W.yaw), rx = -fz, rz = fx;
+    if (m === 'f') { W.x += fx * a; W.z += fz * a; } else if (m === 'b') { W.x -= fx * a; W.z -= fz * a; } else if (m === 'r') { W.x += rx * a; W.z += rz * a; } else if (m === 'l') { W.x -= rx * a; W.z -= rz * a; } else if (m === 'tl') W.yaw += 0.12; else if (m === 'tr') W.yaw -= 0.12;
+    W.x = Math.max(4, Math.min(93, W.x)); W.z = Math.max(8, Math.min(82, W.z)); apply(); }
+  function setWalk(on) { if (on) { const dx = target.x - camera.position.x, dz = target.z - camera.position.z; W.yaw = Math.atan2(dx, dz); W.pitch = -0.05; W.x = camera.position.x; W.z = camera.position.z; }
+    W.on = on; document.getElementById('walkpad').classList.toggle('on', on); const b = document.getElementById('tWalk'); b.classList.toggle('on', on); b.textContent = on ? 'Exit walk mode' : 'Walk mode'; document.getElementById('hint').textContent = on ? 'drag to look around · arrows or WASD to walk · wheel to step' : 'drag to orbit · wheel or pinch to zoom · right-drag or shift-drag to pan'; if (on && typeof setCeil === 'function') setCeil(true); apply(); }
   const presets = {
     vOver: { t: [47, 2, 45], th: -0.9, ph: 0.95, d: 125 },
     vBack: { t: [60, 3, 56], th: Math.atan2(38 - 60, 32 - 56), ph: 1.45, d: 36 },
@@ -299,7 +315,7 @@
     vDoor: { t: [23, 4, 50], th: Math.atan2(14 - 23, 72 - 50), ph: 1.5, d: 24 }, // from the lobby, looking up the hallway
     vNurs: { t: [70, 3, 24], th: Math.atan2(76 - 70, 12 - 24), ph: 1.3, d: 22 }
   };
-  function go(id) { const p = presets[id]; target.set(p.t[0], p.t[1], p.t[2]); theta = p.th; phi = p.ph; dist = p.d; apply(); if (typeof setCeil === 'function') setCeil(id !== 'vOver'); document.querySelectorAll('.bar button[id^="v"]').forEach(b => b.classList.toggle('on', b.id === id)); }
+  function go(id) { const p = presets[id]; if (W.on) setWalk(false); target.set(p.t[0], p.t[1], p.t[2]); theta = p.th; phi = p.ph; dist = p.d; apply(); if (typeof setCeil === 'function') setCeil(id !== 'vOver'); document.querySelectorAll('.bar button[id^="v"]').forEach(b => b.classList.toggle('on', b.id === id)); }
   Object.keys(presets).forEach(id => document.getElementById(id).addEventListener('click', () => go(id)));
   let lowered = false;
   let ceilOn = true; const setCeil = (on) => { ceilOn = on; ceiling.visible = on; const b = document.getElementById('tCeil'); b.textContent = on ? 'Hide ceiling' : 'Show ceiling'; b.classList.toggle('on', !on); };
@@ -309,19 +325,23 @@
   let drag = null;
   el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, b: e.button, shift: e.shiftKey }; el.setPointerCapture(e.pointerId); });
   el.addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    if (W.on) { W.yaw -= dx * 0.005; W.pitch = Math.max(-1.1, Math.min(1.1, W.pitch - dy * 0.005)); apply(); return; }
     if (drag.b === 2 || drag.shift) { const right = new THREE.Vector3(Math.cos(theta), 0, -Math.sin(theta)); const fwd = new THREE.Vector3(-Math.sin(theta), 0, -Math.cos(theta)); target.addScaledVector(right, -dx * dist * 0.0012); target.addScaledVector(fwd, -dy * dist * 0.0012); }
     else { theta -= dx * 0.006; phi = Math.min(1.52, Math.max(0.15, phi - dy * 0.006)); }
     apply(); });
   el.addEventListener('pointerup', () => { drag = null; });
   el.addEventListener('contextmenu', (e) => e.preventDefault());
-  el.addEventListener('wheel', (e) => { e.preventDefault(); dist = Math.min(300, Math.max(8, dist * (1 + e.deltaY * 0.0012))); apply(); }, { passive: false });
+  el.addEventListener('wheel', (e) => { e.preventDefault(); if (W.on) { step(e.deltaY < 0 ? 'f' : 'b', 1.5); return; } dist = Math.min(300, Math.max(8, dist * (1 + e.deltaY * 0.0012))); apply(); }, { passive: false });
   let pinch = null;
   el.addEventListener('touchstart', (e) => { if (e.touches.length === 2) pinch = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }, { passive: true });
   el.addEventListener('touchmove', (e) => { if (e.touches.length === 2 && pinch) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); dist = Math.min(300, Math.max(8, dist * pinch / d)); pinch = d; apply(); } }, { passive: true });
+  document.getElementById('tWalk').addEventListener('click', () => setWalk(!W.on));
+  { let timer = null; document.querySelectorAll('#walkpad button').forEach(b => { const go1 = () => step(b.dataset.m); const start = (e) => { e.preventDefault(); go1(); timer = setInterval(go1, 140); }; const stop = () => { clearInterval(timer); timer = null; }; b.addEventListener('pointerdown', start); ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, stop)); }); }
+  window.addEventListener('keydown', (e) => { if (!W.on || e.target.tagName === 'INPUT') return; const k = e.key.toLowerCase(); const map = { arrowup: 'f', w: 'f', arrowdown: 'b', s: 'b', arrowleft: 'l', a: 'l', arrowright: 'r', d: 'r', q: 'tl', e: 'tr' }; if (map[k]) { e.preventDefault(); step(e.shiftKey && (map[k] === 'l' || map[k] === 'r') ? (map[k] === 'l' ? 'tl' : 'tr') : map[k]); } });
   function resize() { const w = view.clientWidth, h = view.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
   window.addEventListener('resize', resize);
   resize(); apply();
-  const h0 = (location.hash || '').replace('#', ''); if (presets[h0]) go(h0);
+  const h0 = (location.hash || '').replace('#', ''); if (presets[h0]) go(h0); if (h0 === 'walk') { go('vBack'); setWalk(true); }
   (function loop() { renderer.render(scene, camera); requestAnimationFrame(loop); })();
 })();
 </script>
